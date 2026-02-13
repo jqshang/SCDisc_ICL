@@ -1,0 +1,7 @@
+# General
+torch
+transformers
+numpy
+openai>=1.30.0
+pandas
+
