@@ -10,6 +10,8 @@ cd SCDisc_ICL
 sh setup.sh
 ```
 
+During setup you may be prompted to enter your HuggingFace API key in order to access models.
+
 ## Setup Hugging Face API Token
 
 To use the Hugging Face API, you need to generate an access token:
@@ -23,4 +25,24 @@ To use the Hugging Face API, you need to generate an access token:
 7.  **Copy** the generated token immediately, as it will not be shown again.
 
 Store this token securely, for example, in a `.env` file as `HUGGINGFACE_TOKEN=hf_...`.
+
+You can further ensure that HF models are stored consistently by exporting `$HF_HOME`:
+
+```bash
+export HF_HOME="/scratch/$USER/hf_cache"
+```
+
+## Testing Out a Basic Model
+
+You may run a query on GPT-2 by running:
+
+```bash
+sh launch_test.sh
+```
+
+If you want to run on an L40 GPU you can use *slurm* workload manager:
+
+```
+sbatch launch_test.sh
+```
 
