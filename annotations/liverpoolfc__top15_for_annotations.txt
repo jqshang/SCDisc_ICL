@@ -1,0 +1,209 @@
+Emb (PRT)
+
+[0] bingo
+[1] reliability
+[2] performed
+[3] action
+[4] guide
+[5] latest
+[6] toot
+[7] moderators
+[8] useful
+[9] contact
+[10] automated
+[11] harbor
+[12] trustworthy
+[13] code
+[14] verified
+
+---------------------------------------------------------------------------
+Subst (JSD)
+
+[0] postcode
+[1] stacks
+[2] paranoia
+[3] yada
+[4] gol
+[5] gamesmanship
+[6] tar
+[7] highlighter
+[8] anonymity
+[9] overconfidence
+[10] shovels
+[11] stocks
+[12] platinum
+[13] staggered
+[14] poverty
+
+---------------------------------------------------------------------------
+Clustr (AP)
+
+[0] harbor
+[1] beta
+[2] baked
+[3] tr
+[4] roses
+[5] con
+[6] palm
+[7] dispatch
+[8] km
+[9] dubbed
+[10] seed
+[11] taped
+[12] lid
+[13] mills
+[14] pod
+
+---------------------------------------------------------------------------
+Emb (PRT) + FS
+
+[0] bingo
+[1] toot
+[2] menu
+[3] reliability
+[4] code
+[5] automated
+[6] verified
+[7] harbor
+[8] exhibit
+[9] tr
+[10] performed
+[11] shovels
+[12] tar
+[13] generated
+[14] description
+
+---------------------------------------------------------------------------
+Subst (JSD) + FS
+
+[0] postcode
+[1] yada
+[2] stacks
+[3] paranoia
+[4] highlighter
+[5] gol
+[6] gamesmanship
+[7] moderators
+[8] tar
+[9] beta
+[10] clenching
+[11] anonymity
+[12] reliability
+[13] trustworthy
+[14] hog
+
+---------------------------------------------------------------------------
+Clustr (AP) + FS
+
+[0] beta
+[1] harbor
+[2] con
+[3] bingo
+[4] tr
+[5] baked
+[6] hog
+[7] clenching
+[8] palm
+[9] dos
+[10] roses
+[11] dem
+[12] km
+[13] dispatch
+[14] union
+
+---------------------------------------------------------------------------
+Emb (PRT) + FS + PM
+
+[0] bingo
+[1] menu
+[2] toot
+[3] automated
+[4] verified
+[5] dem
+[6] reliability
+[7] exhibit
+[8] mythical
+[9] harbor
+[10] code
+[11] tr
+[12] generated
+[13] retracted
+[14] performed
+
+---------------------------------------------------------------------------
+Subst (JSD) + FS + PM
+
+[0] postcode
+[1] yada
+[2] stacks
+[3] paranoia
+[4] staggered
+[5] verified
+[6] draining
+[7] clenching
+[8] highlighter
+[9] gol
+[10] gamesmanship
+[11] tar
+[12] compound
+[13] inclusive
+[14] moderators
+
+---------------------------------------------------------------------------
+Clustr (AP) + FS + PM
+
+[0] baked
+[1] dem
+[2] dispatch
+[3] clenching
+[4] harbor
+[5] bingo
+[6] beta
+[7] tr
+[8] dubbed
+[9] con
+[10] hog
+[11] taped
+[12] sliced
+[13] mythical
+[14] triggers
+
+---------------------------------------------------------------------------
+Emb (PRT) + PT [** sorted by Subst (JSD) scores]
+
+[0] exits
+[1] touts
+[2] tube
+[3] capitalized
+[4] slashed
+[5] knot
+[6] numbering
+[7] softer
+[8] cartoon
+[9] lols
+[10] jar
+[11] flex
+[12] vain
+[13] staggered
+[14] slogan
+
+---------------------------------------------------------------------------
+Emb (PRT) + PT + FDR [** sorted by Subst (JSD) scores]
+
+[0] tube
+[1] softer
+[2] lols
+[3] flex
+[4] drill
+[5] geography
+[6] obstruction
+[7] muted
+[8] bootroom
+[9] reliability
+[10] rabid
+[11] testimony
+[12] jam
+[13] tech
+[14] verified
+
+---------------------------------------------------------------------------

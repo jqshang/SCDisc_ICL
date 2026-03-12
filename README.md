@@ -46,3 +46,15 @@ If you want to run on an L40 GPU you can use *slurm* workload manager:
 sbatch launch_test.sh
 ```
 
+## Experiment Pipeline
+
+```
+# Default (K=10, combined scoring, 8 ICL examples)
+python run_pipeline.py
+
+# With scaling-law bucket generation across seeds
+python run_pipeline.py --scaling-law --seeds 42 123 456 --buckets 2 4 8 16 32
+
+# Chat format for OpenAI-style APIs
+python run_pipeline.py --format chat --n-icl 16 --k 200
+```
