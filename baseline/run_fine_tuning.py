@@ -1,7 +1,7 @@
 import os
 from subprocess import call
 from optparse import OptionParser
-from misc_utils import *
+from utils.misc_utils import *
 
 # Run the MLM fine-tuning on the new dataset
 
@@ -38,7 +38,7 @@ def main():
 	batch_size = options.batch_size
 	seed = options.seed
 
-	model_dir = '../models/{}__finetuned__{}'.format(dataset, extract_model_name_from_path(model_name))
+	model_dir = 'models/{}__finetuned__{}'.format(dataset, extract_model_name_from_path(model_name))
 	try:
 		assert os.path.exists(model_dir)
 	except AssertionError:
@@ -47,11 +47,11 @@ def main():
 	train_fname = os.path.join(model_dir, 'all_train_sentences.txt')
 	val_fname = os.path.join(model_dir, 'all_val_sentences.txt')
 
-	cache_dir = '../models/misc/cache'
+	cache_dir = 'models/misc/cache'
 	if not os.path.exists(cache_dir):
 		os.makedirs(cache_dir)
 
-	logs_dir = '../models/misc/logs'
+	logs_dir = 'models/misc/logs'
 	if not os.path.exists(logs_dir):
 		os.makedirs(logs_dir)
 

@@ -8,7 +8,7 @@ import torch
 import numpy as np
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForMaskedLM
-from misc_utils import *
+from utils.misc_utils import *
 
 
 
@@ -92,7 +92,7 @@ def main():
 					  help='Top-k terms to keep: default=%default')
 	parser.add_option('--stopwords-file-path', 
 					  type=str, 
-					  default='../data/stopwords/STOPWORDS_spacy_en_core_web_sm.txt',
+					  default='.data/stopwords/STOPWORDS_spacy_en_core_web_sm.txt',
 					  help='Stopwords .txt file: default=%default')
 
 
@@ -118,7 +118,7 @@ def main():
 		STOPWORDS = []
 
 	# Load pretrained model and tokenizer
-	model_path = '../models/{}__finetuned__{}'.format(dataset.lower(), extract_model_name_from_path(model_name))
+	model_path = 'models/{}__finetuned__{}'.format(dataset.lower(), extract_model_name_from_path(model_name))
 	if not os.path.exists(model_path):
 		print('No fine-tuned model under "{}" exists. Attempting to load pre-trained "{}".'.format(model_path, model_name))
 		model_path = model_name
@@ -133,7 +133,7 @@ def main():
 	print("Model loaded:", model_path)
 
 	# Load tokenized data
-	datadir = '../data/{}/processed_{}'.format(dataset, extract_model_name_from_path(model_name))
+	datadir = '.data/{}/processed_{}'.format(dataset, extract_model_name_from_path(model_name))
 	print("Loading data...")
 	with open(os.path.join(datadir, 'tokenized_all.jsonlist')) as f:
 		tokenized_data = [json.loads(line) for line in f.readlines()]
@@ -148,7 +148,7 @@ def main():
 	select_terms = terms_keys[terms_start_id:terms_end_id] + [terms_keys[terms_end_id]]
 
 	# Prepare outputs directory
-	substitutes_dir = '../representations/{}__{}/{}'.format(dataset.lower(), extract_model_name_from_path(model_name), outdir)
+	substitutes_dir = 'representations/{}__{}/{}'.format(dataset.lower(), extract_model_name_from_path(model_name), outdir)
 	if not os.path.exists(substitutes_dir):
 		os.makedirs(substitutes_dir)
 		

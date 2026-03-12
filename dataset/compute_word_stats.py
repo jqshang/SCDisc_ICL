@@ -4,7 +4,7 @@ import json
 from optparse import OptionParser
 from collections import Counter, defaultdict
 from tqdm import tqdm
-from misc_utils import *
+from utils.misc_utils import *
 
 
 def main():
@@ -28,7 +28,7 @@ def main():
     tokenizer_model = extract_model_name_from_path(options.tokenizer_model)
     pre_lemmas_file = options.pre_lemmas_file
 
-    indir = '../data/{}/processed_{}'.format(dataset, tokenizer_model)
+    indir = '.data/{}/processed_{}'.format(dataset, tokenizer_model)
     outdir = os.path.join(indir, 'stats')
     if not os.path.exists(outdir):
         os.makedirs(outdir)

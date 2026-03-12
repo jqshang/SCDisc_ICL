@@ -4,7 +4,7 @@ import json
 from optparse import OptionParser
 from transformers import AutoTokenizer
 from tqdm import tqdm
-from misc_utils import *
+from utils.misc_utils import *
 
 # Index select terms in the corpus
 
@@ -52,7 +52,7 @@ def main():
     global tokenizer
     tokenizer = AutoTokenizer.from_pretrained(options.tokenizer_model)
     
-    datadir = '../data/{}/processed_{}'.format(dataset, tokenizer_model)
+    datadir = '.data/{}/processed_{}'.format(dataset, tokenizer_model)
     print("Loading data...")
     with open(os.path.join(datadir, 'tokenized_all.jsonlist')) as f:
         tokenized_data = [json.loads(line) for line in f.readlines()]
@@ -61,7 +61,7 @@ def main():
         with open(target_terms_path) as f:
             target_terms = json.load(f)
     else:
-        with open(os.path.join('../data', dataset, 'targets.json')) as f:
+        with open(os.path.join('.data', dataset, 'targets.json')) as f:
             target_terms = json.load(f)
 
     with open(os.path.join(datadir, control_terms_fname)) as f:

@@ -25,7 +25,7 @@ from sklearn.cluster import KMeans
 import pandas as pd
 
 from optparse import OptionParser
-from misc_utils import *
+from utils.misc_utils import *
 from tqdm import tqdm
 
 import warnings
@@ -313,13 +313,13 @@ def main():
     
     corpus_slices = ['period_1', 'period_2']
     
-    datadir = '../data/{}/processed_{}'.format(dataset, extract_model_name_from_path(model_name))
-    embeddings_dir = '../representations/{}__{}'.format(dataset.lower(), extract_model_name_from_path(model_name))
+    datadir = '.data/{}/processed_{}'.format(dataset, extract_model_name_from_path(model_name))
+    embeddings_dir = 'representations/{}__{}'.format(dataset.lower(), extract_model_name_from_path(model_name))
     
     if target_words_only:
-        results_path = '../representations/{}__{}/montariol_results_for_targets'.format(dataset.lower(), extract_model_name_from_path(model_name))    
+        results_path = 'representations/{}__{}/montariol_results_for_targets'.format(dataset.lower(), extract_model_name_from_path(model_name))    
     else:
-        results_path = '../representations/{}__{}/montariol_results'.format(dataset.lower(), extract_model_name_from_path(model_name))    
+        results_path = 'representations/{}__{}/montariol_results'.format(dataset.lower(), extract_model_name_from_path(model_name))    
 
 
     measure_vec = []
@@ -337,7 +337,7 @@ def main():
         os.makedirs(results_path)
         
     
-    with open('../data/{}/targets.json'.format(dataset)) as f:
+    with open('.data/{}/targets.json'.format(dataset)) as f:
         targets_to_true_score = json.load(f)
     
     with open(os.path.join(datadir, 'target_indices.json')) as f:

@@ -9,7 +9,7 @@ import numpy as np
 from scipy.spatial.distance import cosine
 
 from tqdm import tqdm
-from misc_utils import *
+from utils.misc_utils import *
 
 
 def aggregate_embedding_representation(embeddings_dct, term, line_ids):
@@ -58,12 +58,12 @@ def main():
 	terms_start_id = options.terms_start_id
 	terms_end_id = options.terms_end_id
 
-	outdir = '../results/permutations/'
+	outdir = 'results/permutations/'
 
-	with open('../data/{}/processed_{}/target_indices.json'.format(dataset, model_name)) as f:
+	with open('.data/{}/processed_{}/target_indices.json'.format(dataset, model_name)) as f:
 		target_indices = json.load(f)
 
-	with open('../data/{}/processed_{}/control_indices.json'.format(dataset, model_name)) as f:
+	with open('.data/{}/processed_{}/control_indices.json'.format(dataset, model_name)) as f:
 		control_indices = json.load(f)
 
 	target_terms = list(target_indices.keys())
@@ -97,7 +97,7 @@ def main():
 		else:
 			is_target_term = False
 
-		embeddings_dir = '../representations/{}__{}/{}_embeddings'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
+		embeddings_dir = 'representations/{}__{}/{}_embeddings'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
 		if not os.path.exists(os.path.join(embeddings_dir, term+'_embeddings.pickle')):
 			continue
 		with open(os.path.join(embeddings_dir, term+'_embeddings.pickle'), 'rb') as f:
@@ -127,7 +127,7 @@ def main():
 			else:
 				is_target_term = False
 			
-			embeddings_dir = '../representations/{}__{}/{}_embeddings'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
+			embeddings_dir = 'representations/{}__{}/{}_embeddings'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
 			if not os.path.exists(os.path.join(embeddings_dir, term+'_embeddings.pickle')):
 				continue
 			with open(os.path.join(embeddings_dir, term+'_embeddings.pickle'), 'rb') as f:

@@ -9,7 +9,7 @@ import numpy as np
 
 from optparse import OptionParser
 from tqdm import tqdm
-from misc_utils import *
+from utils.misc_utils import *
 
 
 
@@ -96,7 +96,7 @@ def main():
     batch_size = options.batch_size
 
     # Load pretrained model and tokenizer
-    model_path = '../models/{}__finetuned__{}'.format(dataset.lower(), extract_model_name_from_path(model_name))
+    model_path = 'models/{}__finetuned__{}'.format(dataset.lower(), extract_model_name_from_path(model_name))
     if not os.path.exists(model_path):
         print('No fine-tuned model under "{}" exists. Attempting to load pre-trained "{}".'.format(model_path, model_name))
         model_path = model_name
@@ -111,7 +111,7 @@ def main():
     print("Model loaded:", model_path)
 
     # Load tokenized data
-    datadir = '../data/{}/processed_{}'.format(dataset, extract_model_name_from_path(model_name))
+    datadir = '.data/{}/processed_{}'.format(dataset, extract_model_name_from_path(model_name))
     print("Loading data...")
     with open(os.path.join(datadir, 'tokenized_all.jsonlist')) as f:
         tokenized_data = [json.loads(line) for line in f.readlines()]
@@ -126,7 +126,7 @@ def main():
     select_terms = terms_keys[terms_start_id:terms_end_id] + [terms_keys[terms_end_id]]
 
     # Prepare outputs directory
-    embeddings_dir = '../representations/{}__{}/{}'.format(dataset.lower(), extract_model_name_from_path(model_name), outdir)
+    embeddings_dir = 'representations/{}__{}/{}'.format(dataset.lower(), extract_model_name_from_path(model_name), outdir)
     if not os.path.exists(embeddings_dir):
         os.makedirs(embeddings_dir)
         

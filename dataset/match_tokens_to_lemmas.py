@@ -5,7 +5,7 @@ import numpy as np
 from optparse import OptionParser
 from tqdm import tqdm
 from collections import Counter
-from misc_utils import *
+from utils.misc_utils import *
 
 
 # Align the lemmatized and original corpora from SemEval
@@ -35,7 +35,7 @@ def main():
     tokenizer_model = options.tokenizer_model
     lemmas_file = options.lemmas_file
 
-    outdir = os.path.join('../data', dataset, 'processed_' + extract_model_name_from_path(tokenizer_model))
+    outdir = os.path.join('.data', dataset, 'processed_' + extract_model_name_from_path(tokenizer_model))
     
     with open(os.path.join(outdir, 'tokenized_all.jsonlist')) as f:
         tokenized_data = [json.loads(line) for line in f.readlines()]

@@ -3,12 +3,12 @@ import os
 import string
 from nltk.tokenize import sent_tokenize
 
-from liverpoolfc_cleaning_utils import *
+from dataset.liverpoolfc_cleaning_utils import *
 
 
 def main():
 
-    data_dir = '../.data/semeval_en/raw/'
+    data_dir = '.data/semeval_en/raw/'
 
     ## STEP 1: Prepare tokens data
 
@@ -44,10 +44,10 @@ def main():
         dcts_list.append(dct)
         line_id += 1
 
-    if not os.path.exists('../.data/semeval_en/merged/'):
-        os.makedirs('../.data/semeval_en/merged/')
+    if not os.path.exists('.data/semeval_en/merged/'):
+        os.makedirs('.data/semeval_en/merged/')
 
-    with open('../.data/semeval_en/merged/all.jsonlist', 'w') as f:
+    with open('.data/semeval_en/merged/all.jsonlist', 'w') as f:
         for dct in dcts_list:
             f.write(json.dumps(dct) + '\n')
 
@@ -85,7 +85,7 @@ def main():
         dcts_list.append(dct)
         line_id += 1
 
-    with open('../.data/semeval_en/merged/all.jsonlist') as f:
+    with open('.data/semeval_en/merged/all.jsonlist') as f:
         tokenized_data = [json.loads(line) for line in f.readlines()]
 
     lemmatized_sentences = []
@@ -107,14 +107,14 @@ def main():
                 sentence_dct['text'].strip().split()
             })
 
-    with open('../.data/semeval_en/merged/pre_lemmatized_all.jsonlist',
+    with open('.data/semeval_en/merged/pre_lemmatized_all.jsonlist',
               'w') as f:
         for sent in lemmatized_sentences:
             f.write(json.dumps(sent) + '\n')
 
     ## STEP 3: Process target words
     truth_dict = {}
-    with open('../.data/semeval_en/raw/truth/graded.txt', 'r') as f:
+    with open('.data/semeval_en/raw/truth/graded.txt', 'r') as f:
         lines = f.read().split('\n')
         for line in lines:
             if len(line) > 0:
@@ -170,10 +170,10 @@ def main():
             targets_to_true_score[token] = truth_dict[lemma_pos]
             token_to_lemma[token] = lemma_pos
 
-    with open('../.data/semeval_en/targets.json', 'w') as f:
+    with open('.data/semeval_en/targets.json', 'w') as f:
         json.dump(targets_to_true_score, f)
 
-    with open('../.data/semeval_en/token_to_lemma.json', 'w') as f:
+    with open('.data/semeval_en/token_to_lemma.json', 'w') as f:
         json.dump(token_to_lemma, f)
 
 

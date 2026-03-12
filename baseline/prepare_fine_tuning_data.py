@@ -4,7 +4,7 @@ import json
 from optparse import OptionParser
 from tqdm import tqdm
 import numpy as np
-from misc_utils import *
+from utils.misc_utils import *
 
 
 def main():
@@ -44,10 +44,10 @@ def main():
 	np.random.seed(seed)
 	
 
-	indir = os.path.join('../data', dataset, 'processed_' + model_name)
+	indir = os.path.join('.data', dataset, 'processed_' + model_name)
 	infile = os.path.join(indir, 'tokenized_all.jsonlist')
 
-	outdir = os.path.join('../models/{}__finetuned__{}'.format(dataset.lower(), model_name))
+	outdir = os.path.join('models/{}__finetuned__{}'.format(dataset.lower(), model_name))
 	if not os.path.exists(outdir):
 		os.makedirs(outdir)
 

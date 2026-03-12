@@ -5,7 +5,7 @@ from optparse import OptionParser
 from collections import Counter, defaultdict
 from transformers import AutoTokenizer
 from tqdm import tqdm
-from misc_utils import *
+from utils.misc_utils import *
 
 
 def main():
@@ -55,10 +55,10 @@ def main():
         with open(target_terms_path) as f:
             targets = json.load(f)
     else:
-        with open(os.path.join('../data', dataset, 'targets.json')) as f:
+        with open(os.path.join('.data', dataset, 'targets.json')) as f:
             targets = json.load(f)
 
-    datadir = '../data/{}/processed_{}'.format(dataset, tokenizer_model)
+    datadir = '.data/{}/processed_{}'.format(dataset, tokenizer_model)
     with open(os.path.join(datadir, 'stats', 'token_by_source_frequencies.json')) as f:
         frequencies_dct = json.load(f)
 

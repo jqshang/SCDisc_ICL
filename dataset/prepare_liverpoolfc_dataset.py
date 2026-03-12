@@ -4,14 +4,14 @@ import string
 from nltk.tokenize import sent_tokenize
 import pandas as pd
 
-from liverpoolfc_cleaning_utils import *
+from dataset.liverpoolfc_cleaning_utils import *
 
 
 def main():
 
     ## STEP 1: Clean up the data [follows main() from liverpoolfc_cleaning_utils.py]
 
-    raw_data_dir = '../.data/LiverpoolFC/raw/'
+    raw_data_dir = '.data/LiverpoolFC/raw/'
     good_chars = set(string.ascii_lowercase + string.digits +
                      string.punctuation + ' ')
 
@@ -53,15 +53,15 @@ def main():
         dcts_list.append(dct)
         sent_id += 1
 
-    if not os.path.exists('../.data/LiverpoolFC/clean'):
-        os.makedirs('../.data/LiverpoolFC/clean')
+    if not os.path.exists('.data/LiverpoolFC/clean'):
+        os.makedirs('.data/LiverpoolFC/clean')
 
-    with open('../.data/LiverpoolFC/clean/all.jsonlist', 'w') as f:
+    with open('.data/LiverpoolFC/clean/all.jsonlist', 'w') as f:
         for dct in dcts_list:
             f.write(json.dumps(dct) + '\n')
 
     ## STEP 3: Process target words
-    df = pd.read_csv('../.data/LiverpoolFC/liverpool_annotated_words.csv')[[
+    df = pd.read_csv('.data/LiverpoolFC/liverpool_annotated_words.csv')[[
         'word', 'shift_index'
     ]]
     temp_dct = df.to_dict('index')
@@ -70,7 +70,7 @@ def main():
         for id_ in temp_dct
     }
 
-    with open('../.data/LiverpoolFC/targets.json', 'w') as f:
+    with open('.data/LiverpoolFC/targets.json', 'w') as f:
         json.dump(targets_dct, f)
 
 

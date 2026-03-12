@@ -4,8 +4,8 @@ import os
 from tqdm import tqdm
 from optparse import OptionParser
 
-from misc_utils import *
-from evaluation_utils import *
+from utils.misc_utils import *
+from evaluation.evaluation_utils import *
 
 
 
@@ -193,13 +193,13 @@ def main():
 	assert do_discovery_base or do_discovery_FS or do_discovery_FS_PM or do_discovery_PT or do_discovery_PT_FDR, 'At least one discovery evalutations should be enabled...'
 
 	# Load data files
-	with open('../data/{}/processed_{}/stats/token_by_pos_frequencies.json'.format(dataset, model_name)) as f:
+	with open('.data/{}/processed_{}/stats/token_by_pos_frequencies.json'.format(dataset, model_name)) as f:
 		token_by_pos_freq_dct = json.load(f)
 
-	with open('../data/{}/targets.json'.format(dataset)) as f:
+	with open('.data/{}/targets.json'.format(dataset)) as f:
 		targets_to_true_score = json.load(f)
 
-	with open('../data/{}/processed_{}/control_indices.json'.format(dataset, model_name)) as f:
+	with open('.data/{}/processed_{}/control_indices.json'.format(dataset, model_name)) as f:
 		control_indices = json.load(f)
 	control_terms = list(control_indices.keys())
 
@@ -213,12 +213,12 @@ def main():
 	print('# ----------------------------------------- #')
 
 	global raw_semantic_change_scores_by_method
-	with open('../results/semantic_change_scores/{}__{}__raw_scores_by_method.json'.format(dataset.lower(), model_name)) as f:
+	with open('results/semantic_change_scores/{}__{}__raw_scores_by_method.json'.format(dataset.lower(), model_name)) as f:
 		raw_semantic_change_scores_by_method = json.load(f)
 
 	global scaled_semantic_change_scores_by_method
-	if os.path.isfile('../results/semantic_change_scores/{}__{}__scaled_scores_by_method.json'.format(dataset.lower(), model_name)):
-		with open('../results/semantic_change_scores/{}__{}__scaled_scores_by_method.json'.format(dataset.lower(), model_name)) as f:
+	if os.path.isfile('results/semantic_change_scores/{}__{}__scaled_scores_by_method.json'.format(dataset.lower(), model_name)):
+		with open('results/semantic_change_scores/{}__{}__scaled_scores_by_method.json'.format(dataset.lower(), model_name)) as f:
 			scaled_semantic_change_scores_by_method = json.load(f)
 	else:
 		scaled_semantic_change_scores_by_method = {}
@@ -238,15 +238,15 @@ def main():
 									   'xl-lexeme': (2.2, 2.5)}}
 
 	global emb_prt_perm_pvals
-	with open('../results/permutations/{}__{}__emb_prt_permutation_pvals.json'.format(dataset.lower(), model_name)) as f:
+	with open('results/permutations/{}__{}__emb_prt_permutation_pvals.json'.format(dataset.lower(), model_name)) as f:
 		emb_prt_perm_pvals = json.load(f)
 
 	global emb_apd_perm_pvals
-	with open('../results/permutations/{}__{}__emb_apd_permutation_pvals.json'.format(dataset.lower(), model_name)) as f:
+	with open('results/permutations/{}__{}__emb_apd_permutation_pvals.json'.format(dataset.lower(), model_name)) as f:
 		emb_apd_perm_pvals = json.load(f)
 
 	global subst_jsd_perm_pvals
-	with open('../results/permutations/{}__{}__subst_jsd_permutation_pvals.json'.format(dataset.lower(), model_name)) as f:
+	with open('results/permutations/{}__{}__subst_jsd_permutation_pvals.json'.format(dataset.lower(), model_name)) as f:
 		subst_jsd_perm_pvals = json.load(f)
 
 	all_top_k_ranked_sets = {}
@@ -371,7 +371,7 @@ def main():
 
 		# SAVE COMPUTED SCALED CHANGE
 		if do_compute_scaled_change:
-			with open('../results/semantic_change_scores/{}__{}__scaled_scores_by_method.json'.format(dataset.lower(), model_name), 'w') as f:
+			with open('results/semantic_change_scores/{}__{}__scaled_scores_by_method.json'.format(dataset.lower(), model_name), 'w') as f:
 				json.dump(scaled_semantic_change_scores_by_method, f)
 
 
@@ -420,7 +420,7 @@ def main():
 
 		# SAVE COMPUTED SCALED CHANGE
 		if do_compute_scaled_change:
-			with open('../results/semantic_change_scores/{}__{}__scaled_scores_by_method.json'.format(dataset.lower(), model_name), 'w') as f:
+			with open('results/semantic_change_scores/{}__{}__scaled_scores_by_method.json'.format(dataset.lower(), model_name), 'w') as f:
 				json.dump(scaled_semantic_change_scores_by_method, f)
 
 
@@ -451,17 +451,17 @@ def main():
 
 	# SAVE DISCOVERY RESULTS
 
-	with open('../results/rankings/{}__{}__W_list_mapping.json'.format(dataset.lower(), model_name), 'w') as f:
+	with open('results/rankings/{}__{}__W_list_mapping.json'.format(dataset.lower(), model_name), 'w') as f:
 		json.dump(W_list_mapping, f)
 
-	with open('../results/rankings/{}__{}__W_list_inverse_mapping.json'.format(dataset.lower(), model_name), 'w') as f:
+	with open('results/rankings/{}__{}__W_list_inverse_mapping.json'.format(dataset.lower(), model_name), 'w') as f:
 		json.dump(W_list_inverse_mapping, f)
 	
 	for method in all_top_k_ranked_sets:
-		with open('../results/rankings/{}__{}__ranked_terms__{}.json'.format(dataset.lower(), model_name, method), 'w') as f:
+		with open('results/rankings/{}__{}__ranked_terms__{}.json'.format(dataset.lower(), model_name, method), 'w') as f:
 			json.dump(all_top_k_ranked_sets[method], f)
 
-		with open('../results/rankings/{}__{}__filtered_ranked_terms__{}.json'.format(dataset.lower(), model_name, method), 'w') as f:
+		with open('results/rankings/{}__{}__filtered_ranked_terms__{}.json'.format(dataset.lower(), model_name, method), 'w') as f:
 			json.dump(filtered_term_rankings_by_method[method], f)
 
 
@@ -514,11 +514,11 @@ def main():
 
 	# Save results
 	for method in all_top_k_ranked_sets:
-		with open('../results/average_rank/{}__{}__T_star_ranking__{}.json'.format(dataset.lower(), model_name, method), 'w') as f:
+		with open('results/average_rank/{}__{}__T_star_ranking__{}.json'.format(dataset.lower(), model_name, method), 'w') as f:
 			json.dump({'average_rank': avg_rank_by_method[method],
 					   'rankings': T_star_rankings_by_method[method]}, f)
 
-		with open('../results/average_rank/{}__{}__filtered_T_star_ranking__{}.json'.format(dataset.lower(), model_name, method), 'w') as f:
+		with open('results/average_rank/{}__{}__filtered_T_star_ranking__{}.json'.format(dataset.lower(), model_name, method), 'w') as f:
 			json.dump({'average_rank': filtered_avg_rank_by_method[method],
 					   'rankings': filtered_T_star_rankings_by_method[method]}, f)
 

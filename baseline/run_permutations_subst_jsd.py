@@ -9,7 +9,7 @@ import random
 import numpy as np
 from scipy.spatial.distance import jensenshannon
 from tqdm import tqdm
-from misc_utils import *
+from utils.misc_utils import *
 
 
 def compute_jsd_from_counters(p_counter, q_counter):
@@ -23,7 +23,7 @@ def compute_jsd_from_counters(p_counter, q_counter):
 
 
 def aggregate_substitute_representation(term, line_ids, is_target_term):
-	substitutes_dir = '../representations/{}__{}/{}_substitutes'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
+	substitutes_dir = 'representations/{}__{}/{}_substitutes'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
 	with open(os.path.join(substitutes_dir, term+'_substitutes.pickle'), 'rb') as f:
 		substitutes = pickle.load(f)
 	all_substitutes_counter = {}
@@ -77,12 +77,12 @@ def main():
 	terms_start_id = options.terms_start_id
 	terms_end_id = options.terms_end_id
 
-	outdir = '../results/permutations/'
+	outdir = 'results/permutations/'
 
-	with open('../data/{}/processed_{}/target_indices.json'.format(dataset, model_name)) as f:
+	with open('.data/{}/processed_{}/target_indices.json'.format(dataset, model_name)) as f:
 		target_indices = json.load(f)
 
-	with open('../data/{}/processed_{}/control_indices.json'.format(dataset, model_name)) as f:
+	with open('.data/{}/processed_{}/control_indices.json'.format(dataset, model_name)) as f:
 		control_indices = json.load(f)
 
 	target_terms = list(target_indices.keys())
@@ -119,7 +119,7 @@ def main():
 			is_target_term = False
 
 
-		substitutes_dir = '../representations/{}__{}/{}_substitutes'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
+		substitutes_dir = 'representations/{}__{}/{}_substitutes'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
 		if not os.path.isfile(os.path.join(substitutes_dir, term+'_substitutes.pickle')):
 			continue
 		change_scores_by_term[term] = compute_subs_jsd_change_score(term, 
@@ -148,7 +148,7 @@ def main():
 			else:
 				is_target_term = False
 			
-			substitutes_dir = '../representations/{}__{}/{}_substitutes'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
+			substitutes_dir = 'representations/{}__{}/{}_substitutes'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
 			if not os.path.isfile(os.path.join(substitutes_dir, term+'_substitutes.pickle')):
 				continue
 			change_scores_by_term[term] = compute_subs_jsd_change_score(term, 

@@ -39,7 +39,7 @@ def compute_jsd_from_counters(p_counter, q_counter):
     return jensenshannon(p_dist, q_dist, base=2)
 
 def aggregate_embedding_representation(term, line_ids, dataset, model_name, is_target_term):
-    embeddings_dir = '../representations/{}__{}/{}_embeddings'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
+    embeddings_dir = 'representations/{}__{}/{}_embeddings'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
     with open(os.path.join(embeddings_dir, term+'_embeddings.pickle'), 'rb') as f:
         embeddings = pickle.load(f)
     all_embeddings = []
@@ -52,7 +52,7 @@ def aggregate_embedding_representation(term, line_ids, dataset, model_name, is_t
     return np.average(all_embeddings, axis=0)
 
 def aggregate_substitute_representation(term, line_ids, dataset, model_name, is_target_term):
-    substitutes_dir = '../representations/{}__{}/{}_substitutes'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
+    substitutes_dir = 'representations/{}__{}/{}_substitutes'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
     with open(os.path.join(substitutes_dir, term+'_substitutes.pickle'), 'rb') as f:
         substitutes = pickle.load(f)
     all_substitutes_counter = {}
@@ -70,7 +70,7 @@ def compute_emb_prt_change_score(term, period_1_line_ids, period_2_line_ids, dat
     return cosine(agg_embedding_1, agg_embedding_2)
 
 def compute_emb_apd_change_score(term, period_1_line_ids, period_2_line_ids, dataset, model_name, is_target_term):
-    embeddings_dir = '../representations/{}__{}/{}_embeddings'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
+    embeddings_dir = 'representations/{}__{}/{}_embeddings'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
     with open(os.path.join(embeddings_dir, term+'_embeddings.pickle'), 'rb') as f:
         embeddings = pickle.load(f)
     point_wise_distances = []

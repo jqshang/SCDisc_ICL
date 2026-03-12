@@ -9,7 +9,7 @@ import numpy as np
 from scipy.spatial.distance import cosine
 
 from tqdm import tqdm
-from misc_utils import *
+from utils.misc_utils import *
 
 
 def compute_emb_apd_change_score(embeddings_dct, term, period_1_line_ids, period_2_line_ids):
@@ -54,12 +54,12 @@ def main():
 
 	model_name = extract_model_name_from_path(model)
 
-	outdir = '../results/permutations/'
+	outdir = 'results/permutations/'
 
-	with open('../data/{}/processed_{}/target_indices.json'.format(dataset, model_name)) as f:
+	with open('.data/{}/processed_{}/target_indices.json'.format(dataset, model_name)) as f:
 		target_indices = json.load(f)
 
-	with open('../data/{}/processed_{}/control_indices.json'.format(dataset, model_name)) as f:
+	with open('.data/{}/processed_{}/control_indices.json'.format(dataset, model_name)) as f:
 		control_indices = json.load(f)
 
 	target_terms = list(target_indices.keys())
@@ -84,15 +84,15 @@ def main():
 			term_sent_ids_by_period[term][period].append(line_id)
 
 	print('OBTAIN ALL PAIRWISE DISTANCES')
-	if continued and os.path.isfile('../results/semantic_change_scores/{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name)):
+	if continued and os.path.isfile('results/semantic_change_scores/{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name)):
 		print('CONTINUING FROM AN OLD FILE FOUND')
-		with open('../results/semantic_change_scores/{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name)) as f:
+		with open('results/semantic_change_scores/{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name)) as f:
 			avg_pairwise_dist_by_term = json.load(f)
 	else:
 		avg_pairwise_dist_by_term = {}
 
-	# if os.path.isfile(os.path.join('../results/', 'old_{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name))):
-	# 	with open(os.path.join('../results/', 'old_{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name))) as f:
+	# if os.path.isfile(os.path.join('results/', 'old_{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name))):
+	# 	with open(os.path.join('results/', 'old_{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name))) as f:
 	# 		avg_pairwise_dist_by_term = json.load(f)
 	# 	print('OLD FILE FOUND')
 
@@ -107,7 +107,7 @@ def main():
 			else:
 				is_target_term = False
 
-			embeddings_dir = '../representations/{}__{}/{}_embeddings'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
+			embeddings_dir = 'representations/{}__{}/{}_embeddings'.format(dataset.lower(), model_name, 'target' if is_target_term else 'control')
 			if not os.path.exists(os.path.join(embeddings_dir, term+'_embeddings.pickle')):
 				continue
 			with open(os.path.join(embeddings_dir, term+'_embeddings.pickle'), 'rb') as f:
@@ -119,12 +119,12 @@ def main():
 																		   term_sent_ids_by_period[term][time_periods[1]])
 			
 			if len(avg_pairwise_dist_by_term) % 10 == 0:
-				with open('../results/semantic_change_scores/{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name), 'w') as f:
+				with open('results/semantic_change_scores/{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name), 'w') as f:
 					json.dump(avg_pairwise_dist_by_term, f)
 		# except:
 		# 	print('ERROR', term)
 
-	with open('../results/semantic_change_scores/{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name), 'w') as f:
+	with open('results/semantic_change_scores/{}__{}__avg_pairwise_dist_by_term.json'.format(dataset.lower(), model_name), 'w') as f:
 		json.dump(avg_pairwise_dist_by_term, f)
 
 
