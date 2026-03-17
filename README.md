@@ -51,7 +51,7 @@ sbatch launch_test.sh
 
 `mkdir -p data/semeval_en/raw/`
 
-Download and move [SemEval-EN data](https://www.ims.uni-stuttgart.de/en/research/resources/corpora/sem-eval-ulscd-eng/) to `data/semeval_en/raw/`. Unzip each `corpus1/<lemma or token>/ccoha1.txt.gz` and `corpus2/<lemma or token>/ccoha2.txt.gz`.
+Download and move [SemEval-EN data](https://www.ims.uni-stuttgart.de/en/research/resources/corpora/sem-eval-ulscd-eng/) to `.data/semeval_en/raw/`. Unzip each `corpus1/<lemma or token>/ccoha1.txt.gz` and `corpus2/<lemma or token>/ccoha2.txt.gz`.
 
 ```
 python dataset/prepare_semevalen_dataset.py
@@ -61,7 +61,7 @@ python dataset/prepare_semevalen_dataset.py
 
 `mkdir -p data/LiverpoolFC/raw/`
 
-Download and move [LiverpoolFC data](https://github.com/marcodel13/Short-term-meaning-shift/tree/master/Dataset) to `data/LiverpoolFC/raw/`. Unzip `LiverpoolFC_13.txt.zip` and `LiverpoolFC_17.txt.zip`.
+Download and move [LiverpoolFC data](https://github.com/marcodel13/Short-term-meaning-shift/tree/master/Dataset) to `.data/LiverpoolFC/raw/`. Unzip `LiverpoolFC_13.txt.zip` and `LiverpoolFC_17.txt.zip`.
 
 ```
 python dataset/prepare_liverpoolfc_dataset.py
@@ -73,12 +73,12 @@ cd ~/SCDisc_ICL
 
 # 1a. Process raw data
 python dataset/process_data.py --dataset semeval_en \
-    --infile ../.data/semeval_en/merged/all.jsonlist \
+    --infile .data/semeval_en/merged/all.jsonlist \
     --tokenizer-model bert-base-uncased \
     --lemmatize --pos-tag
 
 python dataset/process_data.py --dataset LiverpoolFC \
-    --infile ../.data/LiverpoolFC/clean/all.jsonlist \
+    --infile .data/LiverpoolFC/clean/all.jsonlist \
     --tokenizer-model bert-base-uncased \
     --lemmatize --pos-tag
 
