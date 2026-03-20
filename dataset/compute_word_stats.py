@@ -14,6 +14,10 @@ def main():
                       type=str,
                       default='LiverpoolFC',
                       help='Dataset directory name: default=%default')
+    parser.add_option('--data-dir',
+                      type=str,
+                      default='.data',
+                      help='Root data directory: default=%default')
     parser.add_option('--tokenizer-model',
                       type=str,
                       default='bert-base-uncased',
@@ -25,10 +29,11 @@ def main():
     (options, args) = parser.parse_args()
 
     dataset = options.dataset
+    data_dir = options.data_dir
     tokenizer_model = extract_model_name_from_path(options.tokenizer_model)
     pre_lemmas_file = options.pre_lemmas_file
 
-    indir = '.data/{}/processed_{}'.format(dataset, tokenizer_model)
+    indir = os.path.join(data_dir, dataset, f'processed_{tokenizer_model}')
     outdir = os.path.join(indir, 'stats')
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -102,7 +107,7 @@ def main():
                 token_by_period_line_ids[token][source].append((tokens_dct['id'], token_id))
                 token_by_pos_by_period_line_ids[token][pos_tag][source].append((tokens_dct['id'], token_id))
                 token_by_pos_by_period_sents[token][pos_tag][source].append((tokens_dct['id'], 
-                    '{}:{}'.format(len(string_so_far), len(string_so_far)+len(token)+1)))
+                    f'{len(string_so_far)}:{len(string_so_far)+len(token)+1}'))
                 
                 if lemma not in lemma_by_pos_counts:
                     lemma_by_pos_counts[lemma] = {}
@@ -114,7 +119,7 @@ def main():
                 lemma_by_pos_counts[lemma][pos_tag]  += 1
                 lemma_by_period_counts[lemma][source] += 1
 
-                lemma_pos = '{}_{}'.format(lemma, pos_tag)
+                lemma_pos = f'{lemma}_{pos_tag}'
                 if lemma_pos not in lemma_pos_by_token_by_period_line_ids:
                     lemma_pos_by_token_by_period_line_ids[lemma_pos] = {}
                 if token not in lemma_pos_by_token_by_period_line_ids[lemma_pos]:

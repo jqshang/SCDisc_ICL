@@ -32,6 +32,10 @@ def main():
 								{"id": "000000001", \
 								"text": "my opinion is best summarised here", \
 								"source": "period_2011-13"}')
+    parser.add_option('--data-dir',
+                      type=str,
+                      default='.data',
+                      help='Root data directory: default=%default')
     parser.add_option(
         '--tokenizer-model',
         type=str,
@@ -53,12 +57,6 @@ def main():
         'Whether or not to run part-of-speech tagging on the tokens: default=%default'
     )
     parser.add_option(
-        '--verbose',
-        action='store_true',
-        help=
-        'Whether to print out misaligned tokens and lemmas/pos-tags: default=%default'
-    )
-    parser.add_option(
         '--spacy_model',
         type=str,
         default='en_core_web_sm',
@@ -69,30 +67,30 @@ def main():
     (options, args) = parser.parse_args()
 
     dataset = options.dataset
+    data_dir = options.data_dir
     infile = options.infile
     model_name = options.tokenizer_model
     lemmatization = options.lemmatize
     use_existing_lemmas = options.use_existing_lemmas
     pos_tagging = options.pos_tag
-    verbose = options.verbose
     spacy_model = options.spacy_model
 
     outdir = os.path.join(
-        '.data', dataset,
+        data_dir, dataset,
         'processed_' + extract_model_name_from_path(model_name))
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
     with open(infile) as f:
         sentences = f.readlines()
-    print('Loaded n={} sentences from {} file'.format(len(sentences), infile))
+    print(f'Loaded n={len(sentences)} sentences from {infile} file')
 
-    print('Loading the tokenizer ({})...'.format(model_name))
+    print(f'Loading the tokenizer ({model_name})...')
     # Load tokenizer for pretrained model
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     if lemmatization or pos_tagging:
-        print("Loading spaCy ({})".format(spacy_model))
+        print(f"Loading spaCy ({spacy_model})")
         nlp = spacy.load(spacy_model)
 
     tokenized_sentences = []
@@ -156,21 +154,6 @@ def main():
                     aligned = True
                 except AssertionError as e:
                     misaligned_count += 1
-                    len_1 = len(combined_tokens)
-                    len_2 = len(spacy_tokens)
-                    if verbose:
-                        print('Sentence:', text)
-                        for i in range(max(len_1, len_2)):
-                            if i >= len_1:
-                                print('None', spacy_tokens[i].text, lemmas[i],
-                                      pos_tags[i])
-                            elif i >= len_2:
-                                print(combined_tokens[i], 'None', 'None',
-                                      'None')
-                            else:
-                                print(combined_tokens[i], spacy_tokens[i].text,
-                                      lemmas[i], pos_tags[i])
-                        print('-' * 75)
 
                 if lemmatization:
                     lemmatized_sentences.append({
@@ -196,29 +179,25 @@ def main():
                     })
 
     print(
-        'Sentences with misaligned tokens and lemmas/part-of-speech tags: {}'.
-        format(misaligned_count))
+        f'Sentences with misaligned tokens and lemmas/part-of-speech tags: {misaligned_count}')
     print()
 
     tokenized_outfile = os.path.join(outdir, 'tokenized_all.jsonlist')
-    print('Writing n={} tokenized sentences into {} file'.format(
-        len(tokenized_sentences), tokenized_outfile))
+    print(f'Writing n={len(tokenized_sentences)} tokenized sentences into {tokenized_outfile} file')
     with open(tokenized_outfile, 'w') as f:
         for sent in tokenized_sentences:
             f.write(json.dumps(sent) + '\n')
 
     if lemmatization:
         lemmatized_outfile = os.path.join(outdir, 'lemmatized_all.jsonlist')
-        print('Writing lemmatized sentences into {} file'.format(
-            lemmatized_outfile))
+        print(f'Writing lemmatized sentences into {lemmatized_outfile} file')
         with open(lemmatized_outfile, 'w') as f:
             for sent in lemmatized_sentences:
                 f.write(json.dumps(sent) + '\n')
 
     if pos_tagging:
         pos_tagged_outfile = os.path.join(outdir, 'pos_tagged_all.jsonlist')
-        print('Writing pos-tagged sentences into {} file'.format(
-            pos_tagged_outfile))
+        print(f'Writing pos-tagged sentences into {pos_tagged_outfile} file')
         with open(pos_tagged_outfile, 'w') as f:
             for sent in pos_tagged_sentences:
                 f.write(json.dumps(sent) + '\n')

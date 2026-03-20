@@ -15,6 +15,10 @@ def main():
                       type=str,
                       default='LiverpoolFC',
                       help='Dataset directory name: default=%default')
+    parser.add_option('--data-dir',
+                      type=str,
+                      default='.data',
+                      help='Root data directory: default=%default')
     parser.add_option('--tokenizer-model',
                       type=str,
                       default='bert-base-uncased',
@@ -43,6 +47,7 @@ def main():
     (options, args) = parser.parse_args()
 
     dataset = options.dataset
+    data_dir = options.data_dir
     tokenizer_model = extract_model_name_from_path(options.tokenizer_model)
     control_terms_fname = options.control_terms_fname
     target_terms_path = options.target_terms_path
@@ -55,10 +60,10 @@ def main():
         with open(target_terms_path) as f:
             targets = json.load(f)
     else:
-        with open(os.path.join('.data', dataset, 'targets.json')) as f:
+        with open(os.path.join(data_dir, dataset, 'targets.json')) as f:
             targets = json.load(f)
 
-    datadir = '.data/{}/processed_{}'.format(dataset, tokenizer_model)
+    datadir = os.path.join(data_dir, dataset, f'processed_{tokenizer_model}')
     with open(os.path.join(datadir, 'stats', 'token_by_source_frequencies.json')) as f:
         frequencies_dct = json.load(f)
 

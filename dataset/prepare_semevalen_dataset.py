@@ -1,24 +1,34 @@
 import json
 import os
+import re
 import string
+from optparse import OptionParser
 from nltk.tokenize import sent_tokenize
 
 from dataset.liverpoolfc_cleaning_utils import *
 
 
 def main():
+    usage = "usage: %prog [options]"
+    parser = OptionParser(usage)
+    parser.add_option('--data-dir',
+                      type=str,
+                      default='.data',
+                      help='Root data directory: default=%default')
+    (options, args) = parser.parse_args()
+    data_dir = options.data_dir
 
-    data_dir = '.data/semeval_en/raw/'
+    raw_data_dir = os.path.join(data_dir, 'semeval_en', 'raw') + '/'
 
     ## STEP 1: Prepare tokens data
 
-    with open(os.path.join(data_dir, 'corpus1', 'token', 'ccoha1.txt')) as f:
+    with open(os.path.join(raw_data_dir, 'corpus1', 'token', 'ccoha1.txt')) as f:
         corpus1_lines = [
             sent.strip().lower() for sent in f.read().split('\n')
             if len(sent) > 0
         ]
 
-    with open(os.path.join(data_dir, 'corpus2', 'token', 'ccoha2.txt')) as f:
+    with open(os.path.join(raw_data_dir, 'corpus2', 'token', 'ccoha2.txt')) as f:
         corpus2_lines = [
             sent.strip().lower() for sent in f.read().split('\n')
             if len(sent) > 0
@@ -28,7 +38,7 @@ def main():
     line_id = 0
     for line in corpus1_lines:
         dct = {
-            'id': "ccoha_{:09d}".format(line_id),
+            'id': f"ccoha_{line_id:09d}",
             'text': line,
             'source': 'corpus1'
         }
@@ -37,29 +47,30 @@ def main():
 
     for line in corpus2_lines:
         dct = {
-            'id': "ccoha_{:09d}".format(line_id),
+            'id': f"ccoha_{line_id:09d}",
             'text': line,
             'source': 'corpus2'
         }
         dcts_list.append(dct)
         line_id += 1
 
-    if not os.path.exists('.data/semeval_en/merged/'):
-        os.makedirs('.data/semeval_en/merged/')
+    merged_dir = os.path.join(data_dir, 'semeval_en', 'merged')
+    if not os.path.exists(merged_dir):
+        os.makedirs(merged_dir)
 
-    with open('.data/semeval_en/merged/all.jsonlist', 'w') as f:
+    with open(os.path.join(merged_dir, 'all.jsonlist'), 'w') as f:
         for dct in dcts_list:
             f.write(json.dumps(dct) + '\n')
 
     ## STEP 2: Prepare lemmas data
 
-    with open(os.path.join(data_dir, 'corpus1', 'lemma', 'ccoha1.txt')) as f:
+    with open(os.path.join(raw_data_dir, 'corpus1', 'lemma', 'ccoha1.txt')) as f:
         corpus1_lines = [
             sent.strip().lower() for sent in f.read().split('\n')
             if len(sent) > 0
         ]
 
-    with open(os.path.join(data_dir, 'corpus2', 'lemma', 'ccoha2.txt')) as f:
+    with open(os.path.join(raw_data_dir, 'corpus2', 'lemma', 'ccoha2.txt')) as f:
         corpus2_lines = [
             sent.strip().lower() for sent in f.read().split('\n')
             if len(sent) > 0
@@ -69,7 +80,7 @@ def main():
     line_id = 0
     for line in corpus1_lines:
         dct = {
-            'id': "ccoha_{:09d}".format(line_id),
+            'id': f"ccoha_{line_id:09d}",
             'text': line,
             'source': 'corpus1'
         }
@@ -78,14 +89,14 @@ def main():
 
     for line in corpus2_lines:
         dct = {
-            'id': "ccoha_{:09d}".format(line_id),
+            'id': f"ccoha_{line_id:09d}",
             'text': line,
             'source': 'corpus2'
         }
         dcts_list.append(dct)
         line_id += 1
 
-    with open('.data/semeval_en/merged/all.jsonlist') as f:
+    with open(os.path.join(merged_dir, 'all.jsonlist')) as f:
         tokenized_data = [json.loads(line) for line in f.readlines()]
 
     lemmatized_sentences = []
@@ -107,14 +118,14 @@ def main():
                 sentence_dct['text'].strip().split()
             })
 
-    with open('.data/semeval_en/merged/pre_lemmatized_all.jsonlist',
+    with open(os.path.join(merged_dir, 'pre_lemmatized_all.jsonlist'),
               'w') as f:
         for sent in lemmatized_sentences:
             f.write(json.dumps(sent) + '\n')
 
     ## STEP 3: Process target words
     truth_dict = {}
-    with open('.data/semeval_en/raw/truth/graded.txt', 'r') as f:
+    with open(os.path.join(raw_data_dir, 'truth', 'graded.txt'), 'r') as f:
         lines = f.read().split('\n')
         for line in lines:
             if len(line) > 0:
@@ -170,10 +181,10 @@ def main():
             targets_to_true_score[token] = truth_dict[lemma_pos]
             token_to_lemma[token] = lemma_pos
 
-    with open('.data/semeval_en/targets.json', 'w') as f:
+    with open(os.path.join(data_dir, 'semeval_en', 'targets.json'), 'w') as f:
         json.dump(targets_to_true_score, f)
 
-    with open('.data/semeval_en/token_to_lemma.json', 'w') as f:
+    with open(os.path.join(data_dir, 'semeval_en', 'token_to_lemma.json'), 'w') as f:
         json.dump(token_to_lemma, f)
 
 

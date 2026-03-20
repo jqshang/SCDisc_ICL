@@ -51,7 +51,7 @@ def _remove_guff(s):
 
 
 def process_LiverpoolFC(fname):
-    print("processing {} ...".format(fname))
+    print(f"processing {fname} ...")
 
     for text in read_LiverpoolFC(fname):
         text = text.strip().lower().replace("\n", " ")
@@ -64,6 +64,9 @@ def process_LiverpoolFC(fname):
 
 
 def main():
+    import sys
+    data_dir = sys.argv[1] if len(sys.argv) > 1 else '.data'
+
     good_chars = set(string.ascii_lowercase + string.digits + ' ')
     good_chars = set(string.ascii_lowercase + string.digits +
                      string.punctuation + ' ')
@@ -71,10 +74,10 @@ def main():
     #f = open("./LiverpoolFC_dataset/LiverpoolFC_ALL_CLEAN.txt", "w")
     for YEAR in ('13', '17'):
         f = bz2.open(
-            "./.data/LiverpoolFC_{}_CLEAN_nopunctuation.txt.bz2".format(YEAR),
+            os.path.join(data_dir, f"LiverpoolFC_{YEAR}_CLEAN_nopunctuation.txt.bz2"),
             "wt")
         for text in process_LiverpoolFC(
-                './.data/LiverpoolFC_{}.txt.bz2'.format(YEAR)):
+                os.path.join(data_dir, f'LiverpoolFC_{YEAR}.txt.bz2')):
             for sent in sent_tokenize(text):
                 sent = "".join([c if c in good else '' for c in sent])
                 print(sent, file=f)
