@@ -208,13 +208,19 @@ def main():
       )
     icl_words = {ex["word"] for ex in icl_examples}
     prompts = {}
+    # TODO: Validation set.
+    stored_prompt = None
     for word, ctxs in all_contexts.items():
       # Only include target words.
       if word in icl_words or word not in target_tot:
         continue
       prompts[word] = build_prompt(word, ctxs, icl_examples, cfg)
+      stored_prompt = prompts[word]
 
     scores = score_all_words(llm, prompts)
+    print(scores)
+    if stored_prompt is not None:
+      print(stored_prompt)
     ranked = rank_words(scores)
     # eval_results = evaluate_ranking(ranked, target_pos, target_neg)
     eval_results = evaluate_discovery(scores, target_pos, target_neg)
