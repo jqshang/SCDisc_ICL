@@ -1,0 +1,266 @@
+Emb (PRT)
+
+[0] tab
+[1] video
+[2] gunshot
+[3] virus
+[4] stainless
+[5] brakes
+[6] sandwich
+[7] vantage
+[8] anthologies
+[9] assists
+[10] helms
+[11] wage
+[12] corrugated
+[13] stance
+[14] casualty
+
+---------------------------------------------------------------------------
+Emb (APD)
+
+[0] video
+[1] tab
+[2] brakes
+[3] gunshot
+[4] virus
+[5] casualty
+[6] mid
+[7] stainless
+[8] way
+[9] vantage
+[10] wage
+[11] sandwich
+[12] vice
+[13] fore
+[14] tweed
+
+---------------------------------------------------------------------------
+Subst (JSD)
+
+[0] projector
+[1] tinsel
+[2] stub
+[3] stuffs
+[4] loon
+[5] canvass
+[6] module
+[7] quince
+[8] tilting
+[9] distortion
+[10] freezer
+[11] vindicated
+[12] swivel
+[13] drilling
+[14] abatement
+
+---------------------------------------------------------------------------
+Clustr (AP)
+
+[0] video
+[1] tab
+[2] gunshot
+[3] brakes
+[4] virus
+[5] casualty
+[6] vantage
+[7] uprising
+[8] sandwich
+[9] stainless
+[10] stance
+[11] corrugated
+[12] assists
+[13] rating
+[14] median
+
+---------------------------------------------------------------------------
+Emb (PRT) + FS
+
+[0] tab
+[1] video
+[2] gunshot
+[3] vice
+[4] stainless
+[5] virus
+[6] lot
+[7] brakes
+[8] sandwich
+[9] vantage
+[10] wage
+[11] anthologies
+[12] assists
+[13] helms
+[14] major
+
+---------------------------------------------------------------------------
+Emb (APD) + FS
+
+[0] video
+[1] tab
+[2] brakes
+[3] vice
+[4] gunshot
+[5] virus
+[6] hell
+[7] mid
+[8] league
+[9] lot
+[10] casualty
+[11] stainless
+[12] wage
+[13] vantage
+[14] reserve
+
+---------------------------------------------------------------------------
+Subst (JSD) + FS
+
+[0] drilling
+[1] quince
+[2] canvass
+[3] freezer
+[4] projector
+[5] hew
+[6] stretcher
+[7] vindicated
+[8] punt
+[9] tilting
+[10] brew
+[11] ailment
+[12] stuffs
+[13] module
+[14] distortion
+
+---------------------------------------------------------------------------
+Clustr (AP) + FS
+
+[0] tab
+[1] gunshot
+[2] video
+[3] lot
+[4] brakes
+[5] vice
+[6] virus
+[7] vantage
+[8] casualty
+[9] uprising
+[10] sandwich
+[11] stainless
+[12] corrugated
+[13] stance
+[14] wage
+
+---------------------------------------------------------------------------
+Emb (PRT) + FS + PM
+
+[0] tab
+[1] video
+[2] corrugated
+[3] stainless
+[4] vice
+[5] gubernatorial
+[6] brakes
+[7] virus
+[8] figuring
+[9] scored
+[10] titled
+[11] mid
+[12] gunshot
+[13] sandwich
+[14] happening
+
+---------------------------------------------------------------------------
+Emb (APD) + FS + PM
+
+[0] video
+[1] tab
+[2] stainless
+[3] brakes
+[4] posed
+[5] bid
+[6] titled
+[7] mid
+[8] jogging
+[9] vice
+[10] incumbent
+[11] figured
+[12] pose
+[13] corrugated
+[14] hell
+
+---------------------------------------------------------------------------
+Subst (JSD) + FS + PM
+
+[0] drilling
+[1] quince
+[2] freezer
+[3] projector
+[4] canvass
+[5] hew
+[6] stretcher
+[7] punt
+[8] brew
+[9] ailment
+[10] stuffs
+[11] module
+[12] distortion
+[13] explorations
+[14] loon
+
+---------------------------------------------------------------------------
+Clustr (AP) + FS + PM
+
+[0] tab
+[1] corrugated
+[2] video
+[3] stainless
+[4] gunshot
+[5] titled
+[6] gubernatorial
+[7] brakes
+[8] generating
+[9] scored
+[10] mid
+[11] median
+[12] vice
+[13] virus
+[14] happening
+
+---------------------------------------------------------------------------
+Emb (APD) + PT [** sorted by Subst (JSD) scores]
+
+[0] perplexity
+[1] austerity
+[2] hedged
+[3] fibre
+[4] unrest
+[5] telltale
+[6] tourist
+[7] penetration
+[8] trailer
+[9] plagued
+[10] docility
+[11] grudge
+[12] mandates
+[13] punishing
+[14] springy
+
+---------------------------------------------------------------------------
+Emb (APD) + PT + FDR [** sorted by Subst (JSD) scores]
+
+[0] austerity
+[1] hedged
+[2] fibre
+[3] unrest
+[4] penetration
+[5] trailer
+[6] plagued
+[7] docility
+[8] mandates
+[9] punishing
+[10] springy
+[11] installation
+[12] salvage
+[13] factor
+[14] abstracted
+
+---------------------------------------------------------------------------

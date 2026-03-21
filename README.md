@@ -46,3 +46,70 @@ If you want to run on an L40 GPU you can use *slurm* workload manager:
 sbatch launch_test.sh
 ```
 
+# Step 1: Data Download
+### SemEval-EN
+
+`mkdir -p data/semeval_en/raw/`
+
+Download and move [SemEval-EN data](https://www.ims.uni-stuttgart.de/en/research/resources/corpora/sem-eval-ulscd-eng/) to `data/semeval_en/raw/`. Unzip each `corpus1/<lemma or token>/ccoha1.txt.gz` and `corpus2/<lemma or token>/ccoha2.txt.gz`.
+
+```
+python dataset/prepare_semevalen_dataset.py
+```
+
+### LiverpoolFC
+
+`mkdir -p data/LiverpoolFC/raw/`
+
+Download and move [LiverpoolFC data](https://github.com/marcodel13/Short-term-meaning-shift/tree/master/Dataset) to `data/LiverpoolFC/raw/`. Unzip `LiverpoolFC_13.txt.zip` and `LiverpoolFC_17.txt.zip`.
+
+```
+python dataset/prepare_liverpoolfc_dataset.py
+```
+
+# Step 2: Data Preprocessing
+```
+cd ~/SCDisc_ICL
+
+# 1a. Process raw data
+python dataset/process_data.py --dataset semeval_en \
+    --infile ../.data/semeval_en/merged/all.jsonlist \
+    --tokenizer-model bert-base-uncased \
+    --lemmatize --pos-tag
+
+python dataset/process_data.py --dataset LiverpoolFC \
+    --infile ../.data/LiverpoolFC/clean/all.jsonlist \
+    --tokenizer-model bert-base-uncased \
+    --lemmatize --pos-tag
+
+# 1b. Map tokens to lemmas + compute word stats
+python dataset/match_tokens_to_lemmas.py --dataset semeval_en  --tokenizer-model bert-base-uncased
+python dataset/compute_word_stats.py     --dataset semeval_en  --tokenizer-model bert-base-uncased
+
+python dataset/match_tokens_to_lemmas.py --dataset LiverpoolFC --tokenizer-model bert-base-uncased
+python dataset/compute_word_stats.py     --dataset LiverpoolFC --tokenizer-model bert-base-uncased
+
+# 1c. Sample control terms
+python dataset/sample_control_terms.py --dataset semeval_en  --tokenizer-model bert-base-uncased --control-terms-fname 'controls.json'
+python dataset/sample_control_terms.py --dataset LiverpoolFC --tokenizer-model bert-base-uncased --control-terms-fname 'controls.json'
+
+# 1d. Index term occurrences
+python dataset/index_term_occurrences.py --dataset semeval_en  --tokenizer-model bert-base-uncased --control-terms-fname 'controls.json' --control-outfile 'control_indices.json'
+python dataset/index_term_occurrences.py --dataset LiverpoolFC --tokenizer-model bert-base-uncased --control-terms-fname 'controls.json' --control-outfile 'control_indices.json'
+```
+
+# Step 3: LLM Reranking
+```
+# 3a. Extract contexts
+python -m icl.extract_contexts --dataset semeval_en --tokenizer-model bert-base-uncased --max-sents-per-period 5
+python -m icl.extract_contexts --dataset LiverpoolFC --tokenizer-model bert-base-uncased --max-sents-per-period 5
+
+# 3b. Build prompts (e.g., 10 ICL examples)
+python -m icl.build_prompts --dataset semeval_en --tokenizer-model bert-base-uncased --n-icl-examples 10
+
+# 3c. Run reranking (single run)
+python -m icl.run_reranking --dataset semeval_en --tokenizer-model bert-base-uncased --llm-model gemma3 --llm-checkpoint google/gemma-3-4b-it --n-icl-examples 10
+
+# Or: scaling curve across bucket sizes
+python -m icl.run_reranking --dataset semeval_en --tokenizer-model bert-base-uncased --llm-model gemma3 --scaling-curve --bucket-sizes 0,1,5,10,20,50 --n-bucket-seeds 3
+```
