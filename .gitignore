@@ -213,3 +213,4 @@ slurm/
 results/
 data/
 __MACOSX/
+.DS_Store
