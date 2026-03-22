@@ -1,10 +1,13 @@
 import os
+import sys
 import json
 import random
 from optparse import OptionParser
 from collections import Counter, defaultdict
 from transformers import AutoTokenizer
 from tqdm import tqdm
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from utils.misc_utils import *
 
 

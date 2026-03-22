@@ -1,10 +1,13 @@
 import os
 import re
+import sys
 import json
 import numpy as np
 from optparse import OptionParser
 from tqdm import tqdm
 from collections import Counter
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from utils.misc_utils import *
 
 

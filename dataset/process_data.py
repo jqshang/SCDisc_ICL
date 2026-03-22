@@ -1,10 +1,13 @@
 import re
 import os
+import sys
 import json
 import spacy
 from tqdm import tqdm
 from optparse import OptionParser
 from transformers import AutoTokenizer
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from utils.misc_utils import *
 import string
 

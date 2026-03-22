@@ -1,10 +1,12 @@
 import json
 import os
 import re
+import sys
 import string
 from optparse import OptionParser
 from nltk.tokenize import sent_tokenize
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from dataset.liverpoolfc_cleaning_utils import *
 
 

@@ -1,9 +1,12 @@
 import os
 import re
+import sys
 import json
 from optparse import OptionParser
 from transformers import AutoTokenizer
 from tqdm import tqdm
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from utils.misc_utils import *
 
 # Index select terms in the corpus
