@@ -8,8 +8,6 @@ from typing import Any, Optional
 
 from utils.misc_utils import extract_model_name_from_path
 
-RF = "/home/rfaulk/projects/aip-rgrosse/rfaulk/SCDisc_ICL/data"
-
 DATASET_CONFIG = {
     "semeval_en": {
         "period_1": "corpus1",
@@ -163,19 +161,29 @@ def main():
     parser.add_option("--context-seed", type=int, default=42)
     parser.add_option("--n-icl-examples", type=int, default=5)
     parser.add_option("--bucket-seed", type=int, default=0)
+    parser.add_option("--data-dir",
+                      type=str,
+                      default=".data",
+                      help="Root data directory: default=%default")
+    parser.add_option("--output-dir",
+                      type=str,
+                      default=None,
+                      help="Output directory (default: <data-dir>/<dataset>/icl)")
     options, _ = parser.parse_args()
 
     dataset = options.dataset
     model_name = extract_model_name_from_path(options.tokenizer_model)
     cfg = DATASET_CONFIG[dataset]
+    data_dir = options.data_dir
 
-    ctx_file = (
-        f"{RF}/{dataset}/icl/contexts__{model_name}"
+    ctx_file = os.path.join(
+        data_dir, dataset, "icl",
+        f"contexts__{model_name}"
         f"__n{options.max_sents_per_period}__seed{options.context_seed}.json")
     with open(ctx_file) as f:
         all_contexts = json.load(f)
 
-    with open(f"{RF}/{dataset}/targets.json") as f:
+    with open(os.path.join(data_dir, dataset, "targets.json")) as f:
         targets = json.load(f)
 
     icl_examples = sample_icl_bucket(
@@ -195,7 +203,7 @@ def main():
         prompt = build_prompt(word, ctxs, icl_examples, cfg)
         prompts[word] = prompt
 
-    outdir = f"{RF}/{dataset}/icl"
+    outdir = options.output_dir if options.output_dir else os.path.join(data_dir, dataset, "icl")
     os.makedirs(outdir, exist_ok=True)
     outfile = os.path.join(
         outdir,
