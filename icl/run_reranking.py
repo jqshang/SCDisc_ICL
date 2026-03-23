@@ -84,19 +84,29 @@ def main():
                       default="0,1,5,10,20,50",
                       help="Comma-separated bucket sizes for scaling curve")
     parser.add_option("--n-bucket-seeds", type=int, default=3)
+    parser.add_option("--data-dir",
+                      type=str,
+                      default=".data",
+                      help="Root data directory: default=%default")
+    parser.add_option("--output-dir",
+                      type=str,
+                      default=None,
+                      help="Output directory (default: results/icl_reranking/<dataset>__<llm-model>)")
     options, _ = parser.parse_args()
 
     dataset = options.dataset
     tok_model = extract_model_name_from_path(options.tokenizer_model)
     cfg = DATASET_CONFIG[dataset]
+    data_dir = options.data_dir
 
-    ctx_file = (
-        f".data/{dataset}/icl/contexts__{tok_model}"
+    ctx_file = os.path.join(
+        data_dir, dataset, "icl",
+        f"contexts__{tok_model}"
         f"__n{options.max_sents_per_period}__seed{options.context_seed}.json")
     with open(ctx_file) as f:
         all_contexts = json.load(f)
 
-    with open(f".data/{dataset}/targets.json") as f:
+    with open(os.path.join(data_dir, dataset, "targets.json")) as f:
         targets = json.load(f)
 
     T_star = {
@@ -112,7 +122,7 @@ def main():
     llm.load()
     print("Model loaded.")
 
-    results_dir = f"results/icl_reranking/{dataset}__{options.llm_model}"
+    results_dir = options.output_dir if options.output_dir else f"results/icl_reranking/{dataset}__{options.llm_model}"
     os.makedirs(results_dir, exist_ok=True)
 
     if options.scaling_curve:

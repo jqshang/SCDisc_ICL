@@ -63,6 +63,14 @@ def main():
         type=str,
         default="controls.json",
     )
+    parser.add_option("--data-dir",
+                      type=str,
+                      default=".data",
+                      help="Root data directory: default=%default")
+    parser.add_option("--output-dir",
+                      type=str,
+                      default=None,
+                      help="Output directory (default: <data-dir>/<dataset>/icl)")
     options, _ = parser.parse_args()
 
     dataset = options.dataset
@@ -70,8 +78,9 @@ def main():
     max_sents = options.max_sents_per_period
     rng = random.Random(options.seed)
 
-    datadir = f".data/{dataset}/processed_{model_name}"
-    outdir = f".data/{dataset}/icl"
+    data_dir = options.data_dir
+    datadir = os.path.join(data_dir, dataset, f"processed_{model_name}")
+    outdir = options.output_dir if options.output_dir else os.path.join(data_dir, dataset, "icl")
     os.makedirs(outdir, exist_ok=True)
 
     corpus = load_corpus_by_line_id(
