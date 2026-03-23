@@ -1,17 +1,18 @@
 import json
+from optparse import OptionParser
 import os
 import time
-from optparse import OptionParser
 
-from tqdm import tqdm
-
-from model import get_model
-from utils.misc_utils import extract_model_name_from_path
 from icl.build_prompts import (
     DATASET_CONFIG,
     build_prompt,
     sample_icl_bucket,
 )
+from model import get_model
+from tqdm import tqdm
+from utils.misc_utils import extract_model_name_from_path
+
+RF = "/home/rfaulk/projects/aip-rgrosse/rfaulk/SCDisc_ICL/data"
 
 
 def score_all_words(llm, prompts: dict[str, str]) -> dict[str, float]:
@@ -31,28 +32,49 @@ def rank_words(scores: dict[str, float]) -> list[str]:
 
 def evaluate_ranking(
     ranked_words: list[str],
-    T_star: set[str],
+    target_pos: set[str],
     top_k_values: list[int] = None,
-) -> dict:
-    if top_k_values is None:
-        top_k_values = [10, 15, 25, 50, 100, 250, 500, 1000]
+) -> dict[str, float]:
+    """Evaluate the ranking of words."""
+    # if top_k_values is None:
+    #     top_k_values = [10, 15, 25, 50, 100, 250, 500, 1000]
     results = {}
     for k in top_k_values:
         top_k = set(ranked_words[:k])
-        discovered = top_k.intersection(T_star)
-        precision = len(discovered) / min(
-            k, len(ranked_words)) if ranked_words else 0
-        recall = len(discovered) / len(T_star) if T_star else 0
+        discovered = top_k.intersection(target_pos)
+        precision = (len(discovered) /
+                     min(k, len(ranked_words)) if ranked_words else 0)
+        recall = len(discovered) / len(target_pos) if target_pos else 0
         results[f"top_{k}"] = {
             "discovered": len(discovered),
             "precision": round(precision, 4),
             "recall": round(recall, 4),
         }
     rank_map = {w: i for i, w in enumerate(ranked_words)}
-    t_star_ranks = [rank_map.get(w, len(ranked_words)) for w in T_star]
-    results["avg_rank_T_star"] = (round(
-        sum(t_star_ranks) / len(t_star_ranks), 2) if t_star_ranks else None)
+    target_pos_ranks = [rank_map.get(w, len(ranked_words)) for w in target_pos]
+    results["avg_rank_T_pos"] = (round(
+        sum(target_pos_ranks) /
+        len(target_pos_ranks), 2) if target_pos_ranks else None)
     return results
+
+
+def evaluate_discovery(
+    scores: dict[str, float],
+    target_pos: set[str],
+    target_neg: set[str],
+) -> dict[str, float]:
+    change = {w for w, s in scores.items() if s > 0.5}
+    no_change = {w for w, s in scores.items() if s <= 0.5}
+    tp = change.intersection(target_pos)  # true positives
+    tn = no_change.intersection(target_neg)  # true negatives
+    fp = target_neg - no_change
+    return {
+        "true positives": str(tp),
+        "true negatives": str(tn),
+        "false positives": str(fp),
+        "precision": len(tp) / (len(tp) + len(fp)) if tp else 0.,
+        "recall": len(tp) / len(target_pos) if target_pos else 0.,
+    }
 
 
 def main():
@@ -67,52 +89,54 @@ def main():
         default="gemma3",
         help="Model key: gemma3, llama3, qwen, gpt4, deepseek-r1",
     )
-    parser.add_option("--llm-checkpoint",
-                      type=str,
-                      default="",
-                      help="Override HuggingFace model ID / path")
+    parser.add_option(
+        "--llm-checkpoint",
+        type=str,
+        default="",
+        help="Override HuggingFace model ID / path",
+    )
     parser.add_option("--max-sents-per-period", type=int, default=5)
     parser.add_option("--context-seed", type=int, default=42)
     parser.add_option("--n-icl-examples", type=int, default=5)
     parser.add_option("--bucket-seed", type=int, default=0)
-    parser.add_option("--scaling-curve",
-                      action="store_true",
-                      default=False,
-                      help="Run across multiple bucket sizes and seeds")
-    parser.add_option("--bucket-sizes",
-                      type=str,
-                      default="0,1,5,10,20,50",
-                      help="Comma-separated bucket sizes for scaling curve")
+    parser.add_option(
+        "--scaling-curve",
+        action="store_true",
+        default=False,
+        help="Run across multiple bucket sizes and seeds",
+    )
+    parser.add_option(
+        "--bucket-sizes",
+        type=str,
+        default="0,1,5,10,20,50",
+        help="Comma-separated bucket sizes for scaling curve",
+    )
     parser.add_option("--n-bucket-seeds", type=int, default=3)
-    parser.add_option("--data-dir",
-                      type=str,
-                      default=".data",
-                      help="Root data directory: default=%default")
-    parser.add_option("--output-dir",
-                      type=str,
-                      default=None,
-                      help="Output directory (default: results/icl_reranking/<dataset>__<llm-model>)")
     options, _ = parser.parse_args()
 
     dataset = options.dataset
     tok_model = extract_model_name_from_path(options.tokenizer_model)
     cfg = DATASET_CONFIG[dataset]
-    data_dir = options.data_dir
 
-    ctx_file = os.path.join(
-        data_dir, dataset, "icl",
-        f"contexts__{tok_model}"
+    ctx_file = (
+        f"{RF}/{dataset}/icl/contexts__{tok_model}"
         f"__n{options.max_sents_per_period}__seed{options.context_seed}.json")
     with open(ctx_file) as f:
         all_contexts = json.load(f)
 
-    with open(os.path.join(data_dir, dataset, "targets.json")) as f:
+    with open(f"{RF}/{dataset}/targets.json") as f:
         targets = json.load(f)
 
-    T_star = {
+    # Split the targets along their discovery classification.
+    target_pos = {
         w.split("_")[0]
-        for w, s in targets.items() if s > cfg["threshold"]
+        for w, s in targets.items() if s >= cfg["threshold"]
     }
+    target_neg = {
+        w.split("_")[0]
+        for w, s in targets.items() if s < cfg["threshold"]
+    }
+    target_tot = target_pos.union(target_neg)
 
     llm_kwargs = {}
     if options.llm_checkpoint:
@@ -122,7 +146,9 @@ def main():
     llm.load()
     print("Model loaded.")
 
-    results_dir = options.output_dir if options.output_dir else f"results/icl_reranking/{dataset}__{options.llm_model}"
+    results_dir = (
+        f"results/icl_reranking/{dataset}_{options.llm_model}_{options.llm_checkpoint}"
+    )
     os.makedirs(results_dir, exist_ok=True)
 
     if options.scaling_curve:
@@ -156,7 +182,7 @@ def main():
 
                 scores = score_all_words(llm, prompts)
                 ranked = rank_words(scores)
-                eval_results = evaluate_ranking(ranked, T_star)
+                eval_results = evaluate_ranking(ranked, target_pos, target_neg)
                 all_scaling_results[n_icl][bseed] = {
                     "scores": scores,
                     "ranking": ranked,
@@ -186,14 +212,22 @@ def main():
             )
         icl_words = {ex["word"] for ex in icl_examples}
         prompts = {}
+        # TODO: Validation set.
+        stored_prompt = None
         for word, ctxs in all_contexts.items():
-            if word in icl_words:
+            # Only include target words.
+            if word in icl_words or word not in target_tot:
                 continue
             prompts[word] = build_prompt(word, ctxs, icl_examples, cfg)
+            stored_prompt = prompts[word]
 
         scores = score_all_words(llm, prompts)
+        print(scores)
+        if stored_prompt is not None:
+            print(stored_prompt)
         ranked = rank_words(scores)
-        eval_results = evaluate_ranking(ranked, T_star)
+        # eval_results = evaluate_ranking(ranked, target_pos, target_neg)
+        eval_results = evaluate_discovery(scores, target_pos, target_neg)
 
         scores_file = os.path.join(
             results_dir,
