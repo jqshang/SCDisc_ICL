@@ -68,7 +68,7 @@ def evaluate_discovery(
   no_change = {w for w, s in scores.items() if s <= 0.5}
   tp = change.intersection(target_pos)  # true positives
   tn = no_change.intersection(target_neg)  # true negatives
-  fp = no_change - tn
+  fp = target_neg - no_change
   return {
       "true positives": str(tp),
       "true negatives": str(tn),
