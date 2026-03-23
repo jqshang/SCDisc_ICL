@@ -32,29 +32,31 @@ def rank_words(scores: dict[str, float]) -> list[str]:
 
 def evaluate_ranking(
     ranked_words: list[str],
-    T_pos: set[str],
-    T_neg: set[str],
+    target_pos: set[str],
     top_k_values: list[int] = None,
-) -> dict:
+) -> dict[str, float]:
+  """Evaluate the ranking of words."""
   # if top_k_values is None:
   #     top_k_values = [10, 15, 25, 50, 100, 250, 500, 1000]
   results = {}
   for k in top_k_values:
     top_k = set(ranked_words[:k])
-    discovered = top_k.intersection(T_pos)
+    discovered = top_k.intersection(target_pos)
     precision = (
         len(discovered) / min(k, len(ranked_words)) if ranked_words else 0
     )
-    recall = len(discovered) / len(T_pos) if T_pos else 0
+    recall = len(discovered) / len(target_pos) if target_pos else 0
     results[f"top_{k}"] = {
         "discovered": len(discovered),
         "precision": round(precision, 4),
         "recall": round(recall, 4),
     }
   rank_map = {w: i for i, w in enumerate(ranked_words)}
-  T_pos_ranks = [rank_map.get(w, len(ranked_words)) for w in T_pos]
+  target_pos_ranks = [rank_map.get(w, len(ranked_words)) for w in target_pos]
   results["avg_rank_T_pos"] = (
-      round(sum(T_pos_ranks) / len(T_pos_ranks), 2) if T_pos_ranks else None
+      round(sum(target_pos_ranks) / len(target_pos_ranks), 2)
+      if target_pos_ranks
+      else None
   )
   return results
 
@@ -68,7 +70,7 @@ def evaluate_discovery(
   no_change = {w for w, s in scores.items() if s <= 0.5}
   tp = change.intersection(target_pos)  # true positives
   tn = no_change.intersection(target_neg)  # true negatives
-  fp = no_change - tn
+  fp = target_neg - no_change
   return {
       "true positives": str(tp),
       "true negatives": str(tn),
@@ -144,7 +146,9 @@ def main():
   llm.load()
   print("Model loaded.")
 
-  results_dir = f"results/icl_reranking/{dataset}__{options.llm_model}"
+  results_dir = (
+      f"results/icl_reranking/{dataset}_{options.llm_model}_{options.llm_checkpoint}"
+  )
   os.makedirs(results_dir, exist_ok=True)
 
   if options.scaling_curve:
@@ -256,4 +260,3 @@ def main():
 
 if __name__ == "__main__":
   main()
-
