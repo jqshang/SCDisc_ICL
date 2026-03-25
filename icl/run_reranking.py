@@ -12,6 +12,7 @@ from model import get_model
 from tqdm import tqdm
 from utils.misc_utils import extract_model_name_from_path
 
+
 def score_all_words(llm, prompts: dict[str, str]) -> dict[str, float]:
     scores = {}
     for word, prompt in tqdm(prompts.items(), desc="Scoring words"):
@@ -113,10 +114,13 @@ def main():
                       type=str,
                       default=".data",
                       help="Root data directory: default=%default")
-    parser.add_option("--output-dir",
-                      type=str,
-                      default=None,
-                      help="Output directory (default: results/icl_reranking/<dataset>_<llm-model>_<llm-checkpoint>)")
+    parser.add_option(
+        "--output-dir",
+        type=str,
+        default=None,
+        help=
+        "Output directory (default: results/icl_reranking/<dataset>_<llm-model>_<llm-checkpoint>)"
+    )
     options, _ = parser.parse_args()
 
     dataset = options.dataset
@@ -125,8 +129,7 @@ def main():
     data_dir = options.data_dir
 
     ctx_file = os.path.join(
-        data_dir, dataset, "icl",
-        f"contexts__{tok_model}"
+        data_dir, dataset, "icl", f"contexts__{tok_model}"
         f"__n{options.max_sents_per_period}__seed{options.context_seed}.json")
     with open(ctx_file) as f:
         all_contexts = json.load(f)
@@ -154,8 +157,8 @@ def main():
     print("Model loaded.")
 
     results_dir = (
-        options.output_dir if options.output_dir
-        else f"results/icl_reranking/{dataset}_{options.llm_model}_{options.llm_checkpoint}"
+        options.output_dir if options.output_dir else
+        f"results/icl_reranking/{dataset}_{options.llm_model}_{options.llm_checkpoint}"
     )
     os.makedirs(results_dir, exist_ok=True)
 
@@ -184,7 +187,7 @@ def main():
                 icl_words = {ex["word"] for ex in icl_examples}
                 prompts = {}
                 for word, ctxs in all_contexts.items():
-                    if word in icl_words:
+                    if word in icl_words or word not in target_tot:
                         continue
                     prompts[word] = build_prompt(word, ctxs, icl_examples, cfg)
 
