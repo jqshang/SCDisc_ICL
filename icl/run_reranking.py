@@ -192,8 +192,11 @@ def main():
                     prompts[word] = build_prompt(word, ctxs, icl_examples, cfg)
 
                 scores = score_all_words(llm, prompts)
+                print(scores)
                 ranked = rank_words(scores)
-                eval_results = evaluate_ranking(ranked, target_pos, target_neg)
+                # eval_results = evaluate_ranking(ranked, target_pos, target_neg)
+                eval_results = evaluate_discovery(scores, target_pos,
+                                                  target_neg)
                 all_scaling_results[n_icl][bseed] = {
                     "scores": scores,
                     "ranking": ranked,
