@@ -13,57 +13,59 @@ DATASET_CONFIG = {
         "period_1": "corpus1",
         "period_2": "corpus2",
         "threshold": 0.28,
-        "period_1_label": "Period 1 (1810-1860)",
-        "period_2_label": "Period 2 (1960-2010)",
     },
     "LiverpoolFC": {
         "period_1": "period_2011-13",
         "period_2": "period_2017",
         "threshold": 0.49,
-        "period_1_label": "Period 1 (2011-2013)",
-        "period_2_label": "Period 2 (2017)",
     },
 }
 
 SYSTEM_INSTRUCTION = (
     "You are an expert linguist specializing in lexical semantic change. The"
     " task is to determine whether a word has undergone a semantic change"
-    " between two time periods for a given word. First, you will be given a"
-    " list of example words that may or may not have undergone semantic change"
-    " between the two time periods. Each example will be annotated as 'Yes' or"
-    " 'No' to indicate whether semantic change occurred.Finally you will be"
-    " presented with the test word and example usages from the two time periods"
-    " and you will be asked to determine if semantic change occurred for the"
-    " test word. Answer only 'Yes' or 'No'.")
+    " between two time periods for a given word. You will be shown example"
+    " usages from two different time periods, but the exact dates of the"
+    " periods are unknown. First, you will be given a list of example words"
+    " that may or may not have undergone semantic change between the two time"
+    " periods. Each example will be annotated as 'Yes' or 'No' to indicate"
+    " whether semantic change occurred. Finally you will be presented with the"
+    " test word and example usages from two time periods and you will be asked"
+    " to determine if semantic change occurred for the test word. Answer only"
+    " 'Yes' or 'No'.")
 
 
 def format_word_block(
     word: str,
     period_1_sents: list[str],
     period_2_sents: list[str],
-    cfg: dict[str, str],
+    rng: random.Random,
     label: Optional[str] = None,
 ) -> str:
-    """Formats a block of text for a single word."""
+    """Formats a block of text for a single word.
+
+    The two chunks of sentences are randomly ordered (but sentences
+    within each chunk keep their original order).
+    """
     lines = [f'Word: "{word}"']
 
-    lines.append(f"\nUsages in {cfg['period_1_label']}:")
-    for i, s in enumerate(period_1_sents, 1):
-        lines.append(f"  {i}. {s}")
+    chunks = [period_1_sents, period_2_sents]
+    if rng.random() < 0.5:
+        chunks = [chunks[1], chunks[0]]
 
-    lines.append(f"\nUsages in {cfg['period_2_label']}:")
-    for i, s in enumerate(period_2_sents, 1):
-        lines.append(f"  {i}. {s}")
+    for group_idx, sents in enumerate(chunks, 1):
+        lines.append(f"\nUsages from time period {group_idx}:")
+        for i, s in enumerate(sents, 1):
+            lines.append(f"  {i}. {s}")
 
     if label is not None:
         lines.append(
-            f"\nAnswer: '{label}', the meaning of '{word}' changed between the"
-            f" periods {cfg['period_1_label']} and {cfg['period_2_label']}.")
+            f"\nAnswer: '{label}', the meaning of '{word}' changed between"
+            " the two time periods.")
     else:
         lines.append(
-            f"\nDid the meaning of '{word}' change between the periods"
-            f" {cfg['period_1_label']} and {cfg['period_2_label']}?\nAnswer 'Yes'"
-            " or 'No': ")
+            f"\nDid the meaning of '{word}' change between the two time"
+            " periods?\nAnswer 'Yes' or 'No': ")
 
     return "\n".join(lines)
 
@@ -73,6 +75,7 @@ def build_prompt(
     test_contexts: dict[str, list[str]],
     icl_examples: list[dict[str, Any]],
     cfg: dict[str, str],
+    rng: random.Random,
 ) -> str:
     """Builds a prompt for semantic change detection."""
     parts = [SYSTEM_INSTRUCTION, ""]
@@ -85,19 +88,19 @@ def build_prompt(
             block = format_word_block(ex["word"],
                                       p1_sents,
                                       p2_sents,
-                                      cfg,
+                                      rng,
                                       label=ex["label"])
             parts.append(block)
             parts.append("")
 
         parts.append("\n-- END SEMANTIC CHANGE EXAMPLES --\n")
         parts.append(
-            f"The word '{test_word}' has had the following usages between two time"
-            " periods:")
+            f"The word '{test_word}' has had the following usages from two"
+            " time periods:")
 
     p1 = test_contexts.get(cfg["period_1"], [])
     p2 = test_contexts.get(cfg["period_2"], [])
-    parts.append(format_word_block(test_word, p1, p2, cfg, label=None))
+    parts.append(format_word_block(test_word, p1, p2, rng, label=None))
 
     return "\n".join(parts)
 
@@ -165,10 +168,11 @@ def main():
                       type=str,
                       default=".data",
                       help="Root data directory: default=%default")
-    parser.add_option("--output-dir",
-                      type=str,
-                      default=None,
-                      help="Output directory (default: <data-dir>/<dataset>/icl)")
+    parser.add_option(
+        "--output-dir",
+        type=str,
+        default=None,
+        help="Output directory (default: <data-dir>/<dataset>/icl)")
     options, _ = parser.parse_args()
 
     dataset = options.dataset
@@ -177,8 +181,7 @@ def main():
     data_dir = options.data_dir
 
     ctx_file = os.path.join(
-        data_dir, dataset, "icl",
-        f"contexts__{model_name}"
+        data_dir, dataset, "icl", f"contexts__{model_name}"
         f"__n{options.max_sents_per_period}__seed{options.context_seed}.json")
     with open(ctx_file) as f:
         all_contexts = json.load(f)
@@ -195,15 +198,17 @@ def main():
         cfg,
     )
 
+    prompt_rng = random.Random(options.bucket_seed)
     icl_words = {ex["word"] for ex in icl_examples}
     prompts = {}
     for word, ctxs in all_contexts.items():
         if word in icl_words:
             continue
-        prompt = build_prompt(word, ctxs, icl_examples, cfg)
+        prompt = build_prompt(word, ctxs, icl_examples, cfg, prompt_rng)
         prompts[word] = prompt
 
-    outdir = options.output_dir if options.output_dir else os.path.join(data_dir, dataset, "icl")
+    outdir = options.output_dir if options.output_dir else os.path.join(
+        data_dir, dataset, "icl")
     os.makedirs(outdir, exist_ok=True)
     outfile = os.path.join(
         outdir,
