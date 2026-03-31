@@ -1,6 +1,7 @@
 import json
 from optparse import OptionParser
 import os
+import random
 import time
 
 from icl.build_prompts import (
@@ -122,6 +123,7 @@ def main():
         "Output directory (default: results/icl_reranking/<dataset>_<llm-model>_<llm-checkpoint>)"
     )
     options, _ = parser.parse_args()
+    prompt_rng = random.Random(options.bucket_seed)
 
     dataset = options.dataset
     tok_model = extract_model_name_from_path(options.tokenizer_model)
@@ -189,7 +191,7 @@ def main():
                 for word, ctxs in all_contexts.items():
                     if word in icl_words or word not in target_tot:
                         continue
-                    prompts[word] = build_prompt(word, ctxs, icl_examples, cfg)
+                    prompts[word] = build_prompt(word, ctxs, icl_examples, cfg, prompt_rng)
 
                 scores = score_all_words(llm, prompts)
                 print(scores)
@@ -232,7 +234,7 @@ def main():
             # Only include target words.
             if word in icl_words or word not in target_tot:
                 continue
-            prompts[word] = build_prompt(word, ctxs, icl_examples, cfg)
+            prompts[word] = build_prompt(word, ctxs, icl_examples, cfg, prompt_rng)
             stored_prompt = prompts[word]
 
         scores = score_all_words(llm, prompts)
