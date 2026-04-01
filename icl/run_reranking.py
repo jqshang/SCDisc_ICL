@@ -110,6 +110,13 @@ def main():
         default="0,1,5,10,20,50",
         help="Comma-separated bucket sizes for scaling curve",
     )
+    parser.add_option(
+        "--validate",
+        action="store_true",
+        default=False,
+        help="USe validation dataset.",
+    )
+    parser.add_option("--n-valid-words", type=int, default=1000)
     parser.add_option("--n-bucket-seeds", type=int, default=3)
     parser.add_option("--data-dir",
                       type=str,
@@ -124,11 +131,15 @@ def main():
     )
     options, _ = parser.parse_args()
     prompt_rng = random.Random(options.bucket_seed)
-
+    validate = options.validate
+    n_valid_words = options.n_valid_words
     dataset = options.dataset
     tok_model = extract_model_name_from_path(options.tokenizer_model)
     cfg = DATASET_CONFIG[dataset]
     data_dir = options.data_dir
+
+    if validate:
+        print("Using validation set...")
 
     ctx_file = os.path.join(
         data_dir, dataset, "icl", f"contexts__{tok_model}"
@@ -160,7 +171,7 @@ def main():
 
     results_dir = (
         options.output_dir if options.output_dir else
-        f"results/icl_reranking/{dataset}_{options.llm_model}_{options.llm_checkpoint}"
+        f"results/icl_reranking/{dataset}_{options.llm_model}_{options.llm_checkpoint}_valid{options.validate}"
     )
     os.makedirs(results_dir, exist_ok=True)
 
@@ -188,6 +199,29 @@ def main():
                     )
                 icl_words = {ex["word"] for ex in icl_examples}
                 prompts = {}
+
+                # Validation set is all words not in the target set.
+                if validate:
+                    validation_set = all_contexts.copy()
+                    for key in target_tot:
+                        validation_set.pop(key)
+                    random.seed(10)
+                    validation_set = random.sample(list(validation_set.items()), n_valid_words)
+                    validation_set = dict(validation_set)
+                    print(f"Validation Words: {validation_set.keys()}")
+
+                stored_prompt = None
+                for word, ctxs in all_contexts.items():
+                    # Include validation set.
+                    if validate:
+                        if word in icl_words or word not in validation_set:
+                            continue
+                    # Include target set.
+                    elif word in icl_words or word not in target_tot:
+                        continue
+                    prompts[word] = build_prompt(word, ctxs, icl_examples, cfg, prompt_rng)
+                    stored_prompt = prompts[word]
+
                 for word, ctxs in all_contexts.items():
                     if word in icl_words or word not in target_tot:
                         continue
@@ -228,11 +262,25 @@ def main():
             )
         icl_words = {ex["word"] for ex in icl_examples}
         prompts = {}
-        # TODO: Validation set.
+
+        # Validation set is all words not in the target set.
+        if validate:
+            validation_set = all_contexts.copy()
+            for key in target_tot:
+                validation_set.pop(key)
+            random.seed(10)
+            validation_set = random.sample(list(validation_set.items()), n_valid_words)
+            validation_set = dict(validation_set)
+            print(f"Validation Words: {validation_set.keys()}")
+ 
         stored_prompt = None
         for word, ctxs in all_contexts.items():
-            # Only include target words.
-            if word in icl_words or word not in target_tot:
+            # Include validation set.
+            if validate:
+                if word in icl_words or word not in validation_set:
+                    continue
+            # Include target set.
+            elif word in icl_words or word not in target_tot:
                 continue
             prompts[word] = build_prompt(word, ctxs, icl_examples, cfg, prompt_rng)
             stored_prompt = prompts[word]
