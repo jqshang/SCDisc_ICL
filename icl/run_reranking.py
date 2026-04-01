@@ -13,6 +13,31 @@ from model import get_model
 from tqdm import tqdm
 from utils.misc_utils import extract_model_name_from_path
 
+import scipy.stats as stats
+
+
+def compute_spearman(dict1, dict2):
+    """
+    Computes Spearman's rank correlation between two dictionaries.
+    Assumes both dictionaries contain the same keys.
+    """
+    # Ensure we are comparing the same words in the same order
+    common_keys = sorted(list(set(dict1.keys()) & set(dict2.keys())))
+    
+    if not common_keys:
+        return None, "No overlapping keys found."
+    
+    if len(common_keys) != len(dict1) or len(common_keys) != len(dict2):
+        print(f"Warning: Only {len(common_keys)} common words found out of original sets.")
+
+    # Extract scores in a consistent order
+    scores1 = [dict1[k] for k in common_keys]
+    scores2 = [dict2[k] for k in common_keys]
+
+    # Calculate correlation (rho) and p-value
+    rho, p_value = stats.spearmanr(scores1, scores2)
+    
+    return rho, p_value
 
 def score_all_words(llm, prompts: dict[str, str]) -> dict[str, float]:
     scores = {}
