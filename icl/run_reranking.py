@@ -266,7 +266,8 @@ def main():
                 print(json.dumps(eval_results, indent=2))
 
         ckpt_tag = f"_{options.llm_checkpoint}" if options.llm_checkpoint else ""
-        outfile = os.path.join(results_dir, f"{dataset}_{options.llm_model}{ckpt_tag}_scaling_curve_results.json")
+        bucket_tag = "__buckets" + options.bucket_sizes.replace(",", "-")
+        outfile = os.path.join(results_dir, f"{dataset}_{options.llm_model}{ckpt_tag}_scaling_curve_results{bucket_tag}.json")
         with open(outfile, "w") as f:
             json.dump(all_scaling_results, f, indent=2)
         print(f"\nScaling curve results saved to {outfile}")
@@ -319,23 +320,24 @@ def main():
         # eval_results = evaluate_ranking(ranked, target_pos, target_neg)
         eval_results = evaluate_discovery(scores, target_pos, target_neg)
 
+        bucket_tag = "__buckets" + options.bucket_sizes.replace(",", "-")
         scores_file = os.path.join(
             results_dir,
-            f"scores__icl{n_icl}__bseed{bseed}.json",
+            f"scores__icl{n_icl}__bseed{bseed}{bucket_tag}.json",
         )
         with open(scores_file, "w") as f:
             json.dump(scores, f, indent=2)
 
         ranking_file = os.path.join(
             results_dir,
-            f"ranking__icl{n_icl}__bseed{bseed}.json",
+            f"ranking__icl{n_icl}__bseed{bseed}{bucket_tag}.json",
         )
         with open(ranking_file, "w") as f:
             json.dump(ranked, f, indent=2)
 
         eval_file = os.path.join(
             results_dir,
-            f"evaluation__icl{n_icl}__bseed{bseed}.json",
+            f"evaluation__icl{n_icl}__bseed{bseed}{bucket_tag}.json",
         )
         with open(eval_file, "w") as f:
             json.dump(eval_results, f, indent=2)
