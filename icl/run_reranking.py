@@ -265,7 +265,8 @@ def main():
                 }
                 print(json.dumps(eval_results, indent=2))
 
-        outfile = os.path.join(results_dir, "scaling_curve_results.json")
+        ckpt_tag = f"_{options.llm_checkpoint}" if options.llm_checkpoint else ""
+        outfile = os.path.join(results_dir, f"{dataset}_{options.llm_model}{ckpt_tag}_scaling_curve_results.json")
         with open(outfile, "w") as f:
             json.dump(all_scaling_results, f, indent=2)
         print(f"\nScaling curve results saved to {outfile}")
