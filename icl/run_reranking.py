@@ -23,12 +23,14 @@ def compute_spearman(dict1, dict2):
     """
     # Ensure we are comparing the same words in the same order
     common_keys = sorted(list(set(dict1.keys()) & set(dict2.keys())))
-    
+
     if not common_keys:
         return None, "No overlapping keys found."
-    
+
     if len(common_keys) != len(dict1) or len(common_keys) != len(dict2):
-        print(f"Warning: Only {len(common_keys)} common words found out of original sets.")
+        print(
+            f"Warning: Only {len(common_keys)} common words found out of original sets."
+        )
 
     # Extract scores in a consistent order
     scores1 = [dict1[k] for k in common_keys]
@@ -36,8 +38,9 @@ def compute_spearman(dict1, dict2):
 
     # Calculate correlation (rho) and p-value
     rho, p_value = stats.spearmanr(scores1, scores2)
-    
+
     return rho, p_value
+
 
 def score_all_words(llm, prompts: dict[str, str]) -> dict[str, float]:
     scores = {}
@@ -231,7 +234,8 @@ def main():
                     for key in target_tot:
                         validation_set.pop(key)
                     random.seed(10)
-                    validation_set = random.sample(list(validation_set.items()), n_valid_words)
+                    validation_set = random.sample(
+                        list(validation_set.items()), n_valid_words)
                     validation_set = dict(validation_set)
                     print(f"Validation Words: {validation_set.keys()}")
 
@@ -244,13 +248,15 @@ def main():
                     # Include target set.
                     elif word in icl_words or word not in target_tot:
                         continue
-                    prompts[word] = build_prompt(word, ctxs, icl_examples, cfg, prompt_rng)
+                    prompts[word] = build_prompt(word, ctxs, icl_examples, cfg,
+                                                 prompt_rng)
                     stored_prompt = prompts[word]
 
                 for word, ctxs in all_contexts.items():
                     if word in icl_words or word not in target_tot:
                         continue
-                    prompts[word] = build_prompt(word, ctxs, icl_examples, cfg, prompt_rng)
+                    prompts[word] = build_prompt(word, ctxs, icl_examples, cfg,
+                                                 prompt_rng)
 
                 scores = score_all_words(llm, prompts)
                 print(scores)
@@ -265,9 +271,12 @@ def main():
                 }
                 print(json.dumps(eval_results, indent=2))
 
-        ckpt_tag = f"_{options.llm_checkpoint}" if options.llm_checkpoint else ""
+        ckpt_tag = f"_{options.llm_checkpoint.replace('/', '-').replace('\\', '-')}" if options.llm_checkpoint else ""
         bucket_tag = "__buckets" + options.bucket_sizes.replace(",", "-")
-        outfile = os.path.join(results_dir, f"{dataset}_{options.llm_model}{ckpt_tag}_scaling_curve_results{bucket_tag}.json")
+        outfile = os.path.join(
+            results_dir,
+            f"{dataset}_{options.llm_model}{ckpt_tag}_scaling_curve_results{bucket_tag}.json"
+        )
         with open(outfile, "w") as f:
             json.dump(all_scaling_results, f, indent=2)
         print(f"\nScaling curve results saved to {outfile}")
@@ -296,10 +305,11 @@ def main():
             for key in target_tot:
                 validation_set.pop(key)
             random.seed(10)
-            validation_set = random.sample(list(validation_set.items()), n_valid_words)
+            validation_set = random.sample(list(validation_set.items()),
+                                           n_valid_words)
             validation_set = dict(validation_set)
             print(f"Validation Words: {validation_set.keys()}")
- 
+
         stored_prompt = None
         for word, ctxs in all_contexts.items():
             # Include validation set.
@@ -309,7 +319,8 @@ def main():
             # Include target set.
             elif word in icl_words or word not in target_tot:
                 continue
-            prompts[word] = build_prompt(word, ctxs, icl_examples, cfg, prompt_rng)
+            prompts[word] = build_prompt(word, ctxs, icl_examples, cfg,
+                                         prompt_rng)
             stored_prompt = prompts[word]
 
         scores = score_all_words(llm, prompts)
