@@ -1,52 +1,11 @@
-# CSC2611 Course Project: Semantic Change Discovery through In-Context Learning
+# CSC2611 Course Project: Semantic Change Discovery Using In-Context Learning
 
-## Setup Virtual Environment
-
-Simply run the following:
-
-```bash
-git clone https://github.com/jqshang/SCDisc_ICL
-cd SCDisc_ICL
-sh setup.sh
-```
-
-During setup you may be prompted to enter your HuggingFace API key in order to access models.
-
-## Setup Hugging Face API Token
-
-To use the Hugging Face API, you need to generate an access token:
-
-1.  **Log in** to your [Hugging Face account](https://huggingface.co/).
-2.  Navigate to **Settings** by clicking your profile picture in the top right corner.
-3.  Click on **Access Tokens** in the left sidebar.
-4.  Click the **New token** button.
-5.  Give your token a name (e.g., "my-app") and select the desired role (e.g., `Read` for inference, `Write` if you are creating models).
-6.  Click **Generate a token**.
-7.  **Copy** the generated token immediately, as it will not be shown again.
-
-Store this token securely, for example, in a `.env` file as `HUGGINGFACE_TOKEN=hf_...`.
-
-You can further ensure that HF models are stored consistently by exporting `$HF_HOME`:
-
-```bash
-export HF_HOME="/scratch/$USER/hf_cache"
-```
-
-## Testing Out a Basic Model
-
-You may run a query on GPT-2 by running:
-
-```bash
-sh launch_test.sh
-```
-
-If you want to run on an L40 GPU you can use *slurm* workload manager:
-
-```
-sbatch launch_test.sh
-```
+> Abstract: This project investigates semantic discovery through In-Context Learning (ICL), addressing the critical gap where traditional semantic change detection is often limited to curated target-word lists rather than open-vocabulary discovery in large, real-world corpora. To solve the "needle in a haystack" problem of identifying word-sense shifts in the wild, we propose a methodology that leverages the contextual capabilities of Large Language Models (LLMs), including GPT-4o, Qwen-4B-Thinking, and Llama3, to rank the likelihood of change by prompting them with usage examples from disparate time periods. Evaluating our approach on the SemEval and LiverpoolFC datasets, we found that "thinking models" exhibit a significant scaling effect, with recall reaching approximately 90\% as the number of in-context examples increases. However, our results also reveal a point of diminishing returns where precision tends to degrade with higher example counts, likely due to noise in the prompt examples, underscoring both the high potential of LLM-based ICL for automated linguistic discovery and the necessity for refined example selection strategies.
 
 # Step 1: Data Download
+
+Downloaded and preprocessed datasets can be found at this shared [Google Drive folder](https://drive.google.com/drive/folders/1Qwp5Wt_-5f9pdVf9ifNunXKAYgVOjENK?usp=sharing). You can also run your downloading and preprocessing pipelines as follows.
+
 ### SemEval-EN
 
 `mkdir -p data/semeval_en/raw/`
